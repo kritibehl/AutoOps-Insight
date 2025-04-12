@@ -9,17 +9,8 @@ CI/CD Health & Failure Analyzer built with FastAPI. Analyze build failures, dete
 - AI-driven root cause insights (OpenAI)
 - REST API to plug into DevOps workflows
 
-## 📦 Tech Stack
-
-- FastAPI
-- GitHub Actions / Jenkins
-- OpenAI API
-- Python
-
-## ▶️ Getting Started
+## ▶️ Run Locally
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
 uvicorn main:app --reload
+```

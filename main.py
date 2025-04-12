@@ -5,4 +5,3 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"message": "AutoOps Insight - CI/CD Health Analyzer API"}
-
