@@ -1,0 +1,6 @@
+log_text,label
+"npm ERR! ERESOLVE unable to resolve dependency tree",Dependency Error
+"ModuleNotFoundError: No module named 'xyz'",Missing Module
+"Segmentation fault (core dumped)",Runtime Crash
+"Permission denied: ./gradlew",Permission Error
+"Connection refused at http://localhost",Network Failure
