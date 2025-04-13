@@ -20,8 +20,9 @@ function App() {
     formData.append("file", file);
 
     try {
-      const predict = await axios.post("http://127.0.0.1:8000/predict", formData);
-      const summary = await axios.post("http://127.0.0.1:8000/summarize", formData);
+      const predict = await axios.post("https://autoops-insight.onrender.com/predict", formData);
+      const summary = await axios.post("https://autoops-insight.onrender.com/summarize", formData);
+
       setPredictResult(predict.data);
       setSummaryResult(summary.data);
     } catch (err) {
