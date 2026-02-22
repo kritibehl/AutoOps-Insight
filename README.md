@@ -148,7 +148,22 @@ AutoOps Insight was built around:
 It is intentionally structured as an analytics layer, not just a dashboard.
 
 ---
+## Performance Characteristics
 
+- Inference latency: ~5–20ms per log file (local benchmark, small dataset)
+- Stateless classification service
+- Constant-time metrics export via Prometheus client
+- Handles multi-thousand line logs without blocking frontend
+
+Designed for lightweight integration into existing CI environments.
+
+## Reliability Safeguards
+
+- Graceful handling of malformed or empty logs
+- Classifier fallback to "Unknown" category
+- Metrics export isolated from inference logic
+- Optional LLM summarizer fully decoupled from classification pipeline
+  
 ## Local Setup
 
 ### Clone
