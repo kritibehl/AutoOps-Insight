@@ -38,6 +38,60 @@ def render_markdown_report(summary: Dict[str, Any]) -> str:
         lines.append("- No recurring signatures detected")
     lines.append("")
 
+    lines.append("## Recent Failure Family Distribution")
+    lines.append("")
+    if summary["recent_failure_family_distribution"]:
+        for item in summary["recent_failure_family_distribution"]:
+            lines.append(
+                f"- `{item['failure_family']}`: count={item['count']} | share={item['percentage']}%"
+            )
+    else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("## Recent Signature Concentration")
+    lines.append("")
+    sig = summary["recent_signature_concentration"]
+    lines.append(f"- Total recent items: {sig['total_items']}")
+    lines.append(f"- Unique signatures: {sig['unique_signatures']}")
+    lines.append(f"- Top signature: {sig['top_signature']}")
+    lines.append(f"- Top signature count: {sig['top_signature_count']}")
+    lines.append(f"- Top signature share: {sig['top_signature_share_pct']}%")
+    lines.append("")
+
+    lines.append("## Window Comparison")
+    lines.append("")
+    wc = summary["window_comparison"]
+    lines.append(f"- Recent window size: {wc['recent_window_size']}")
+    lines.append(f"- Baseline window size: {wc['baseline_window_size']}")
+    lines.append(f"- Recent release-blocker rate: {wc['recent_release_blocker_rate']}%")
+    lines.append(f"- Baseline release-blocker rate: {wc['baseline_release_blocker_rate']}%")
+    lines.append(f"- Delta: {wc['release_blocker_delta_pct_points']} percentage points")
+    lines.append("")
+
+    lines.append("## Recent Family Trend")
+    lines.append("")
+    if summary["recent_family_trend"]:
+        for item in summary["recent_family_trend"]:
+            lines.append(
+                f"- `{item['failure_family']}`: recent={item['recent_count']} | "
+                f"baseline={item['baseline_count']} | delta={item['delta']}"
+            )
+    else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("## Detected Anomalies")
+    lines.append("")
+    if summary["anomalies"]:
+        for item in summary["anomalies"]:
+            lines.append(
+                f"- [{item['severity']}] {item['type']}: {item['message']}"
+            )
+    else:
+        lines.append("- No anomaly heuristics triggered")
+    lines.append("")
+
     lines.append("## Recent Analyses")
     lines.append("")
     if summary["recent_analyses"]:
@@ -54,8 +108,8 @@ def render_markdown_report(summary: Dict[str, Any]) -> str:
     if summary["release_risk"] in {"high", "critical"}:
         lines.append("## Operational Recommendation")
         lines.append("")
-        lines.append("- Repeated failure signatures are present at levels that may indicate regression or release instability.")
-        lines.append("- Investigate recurring signatures before promoting the current build or environment.")
+        lines.append("- Repeated failure signatures or concentrated release-blocking patterns indicate elevated release risk.")
+        lines.append("- Review recurring signatures, failure-family spikes, and recent blocker concentration before promotion.")
         lines.append("")
 
     return "\n".join(lines)
