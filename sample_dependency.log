@@ -1,0 +1,4 @@
+ERROR: build failed while resolving dependency graph
+artifact not found in internal registry
+retry exhausted after 3 attempts
+dependency unavailable during package restore
