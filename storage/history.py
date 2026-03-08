@@ -5,6 +5,14 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
+from analysis.anomalies import detect_anomalies
+from analysis.trends import (
+    compute_failure_family_distribution,
+    compute_signature_concentration,
+    compute_window_comparison,
+    compute_failure_family_window_trend,
+)
+
 DB_PATH = os.getenv("AUTOOPS_DB_PATH", "autoops.db")
 
 
@@ -266,7 +274,14 @@ def get_report_summary():
     release_blockers = get_release_blocker_count()
     recurring = get_top_recurring_signatures(limit=10)
     family_counts = get_failure_family_counts(limit=10)
-    recent = get_recent_analyses(limit=10)
+    recent = get_recent_analyses(limit=20)
+
+    recent_window = recent[:5]
+    family_distribution = compute_failure_family_distribution(recent_window)
+    signature_concentration = compute_signature_concentration(recent_window)
+    window_comparison = compute_window_comparison(recent, recent_window_size=5, baseline_window_size=10)
+    family_trend = compute_failure_family_window_trend(recent, recent_window_size=5, baseline_window_size=10)
+    anomalies = detect_anomalies(recent_window, recurring, signature_concentration, family_trend)
 
     release_risk = "low"
     if release_blockers > 0:
@@ -275,6 +290,8 @@ def get_report_summary():
         release_risk = "high"
     if any(item["severity"] == "critical" and item["total_count"] >= 2 for item in recurring):
         release_risk = "critical"
+    if any(a["severity"] == "high" for a in anomalies) and total_analyses >= 3:
+        release_risk = "high"
 
     return {
         "total_analyses": total_analyses,
@@ -283,4 +300,9 @@ def get_report_summary():
         "top_failure_families": family_counts,
         "top_recurring_signatures": recurring,
         "recent_analyses": recent,
+        "recent_failure_family_distribution": family_distribution,
+        "recent_signature_concentration": signature_concentration,
+        "window_comparison": window_comparison,
+        "recent_family_trend": family_trend,
+        "anomalies": anomalies,
     }

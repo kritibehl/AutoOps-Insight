@@ -111,5 +111,62 @@
       "confidence": 0.95,
       "release_blocking": true
     }
+  ],
+  "recent_failure_family_distribution": [
+    {
+      "failure_family": "timeout",
+      "count": 4,
+      "percentage": 80.0
+    },
+    {
+      "failure_family": "retry_exhausted",
+      "count": 1,
+      "percentage": 20.0
+    }
+  ],
+  "recent_signature_concentration": {
+    "total_items": 5,
+    "unique_signatures": 2,
+    "top_signature": "timeout:733da8a4e20740af",
+    "top_signature_count": 4,
+    "top_signature_share_pct": 80.0
+  },
+  "window_comparison": {
+    "recent_window_size": 5,
+    "baseline_window_size": 3,
+    "recent_release_blocker_rate": 100.0,
+    "baseline_release_blocker_rate": 100.0,
+    "release_blocker_delta_pct_points": 0.0
+  },
+  "recent_family_trend": [
+    {
+      "failure_family": "timeout",
+      "recent_count": 4,
+      "baseline_count": 3,
+      "delta": 1
+    },
+    {
+      "failure_family": "retry_exhausted",
+      "recent_count": 1,
+      "baseline_count": 0,
+      "delta": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "type": "recurring_signature_concentration",
+      "severity": "high",
+      "message": "Top signature timeout:733da8a4e20740af accounts for 80.0% of recent analyses."
+    },
+    {
+      "type": "repeated_signature",
+      "severity": "high",
+      "message": "Signature timeout:733da8a4e20740af has recurred 7 times with severity high."
+    },
+    {
+      "type": "release_blocker_saturation",
+      "severity": "high",
+      "message": "All recent analyses are marked release-blocking."
+    }
   ]
 }

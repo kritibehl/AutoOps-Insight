@@ -1,6 +1,6 @@
 # AutoOps Insight Report
 
-Generated at: 2026-03-08T01:48:43.366148+00:00
+Generated at: 2026-03-08T01:52:38.607111+00:00
 
 ## Release Risk Summary
 
@@ -17,6 +17,38 @@ Generated at: 2026-03-08T01:48:43.366148+00:00
 
 - `timeout:733da8a4e20740af` | family=timeout | severity=high | count=7 | first_seen=2026-03-08T01:45:06.301515+00:00 | last_seen=2026-03-08T01:48:02.340941+00:00
 
+## Recent Failure Family Distribution
+
+- `timeout`: count=4 | share=80.0%
+- `retry_exhausted`: count=1 | share=20.0%
+
+## Recent Signature Concentration
+
+- Total recent items: 5
+- Unique signatures: 2
+- Top signature: timeout:733da8a4e20740af
+- Top signature count: 4
+- Top signature share: 80.0%
+
+## Window Comparison
+
+- Recent window size: 5
+- Baseline window size: 3
+- Recent release-blocker rate: 100.0%
+- Baseline release-blocker rate: 100.0%
+- Delta: 0.0 percentage points
+
+## Recent Family Trend
+
+- `timeout`: recent=4 | baseline=3 | delta=1
+- `retry_exhausted`: recent=1 | baseline=0 | delta=1
+
+## Detected Anomalies
+
+- [high] recurring_signature_concentration: Top signature timeout:733da8a4e20740af accounts for 80.0% of recent analyses.
+- [high] repeated_signature: Signature timeout:733da8a4e20740af has recurred 7 times with severity high.
+- [high] release_blocker_saturation: All recent analyses are marked release-blocking.
+
 ## Recent Analyses
 
 - id=8 | created_at=2026-03-08T01:48:43.114266+00:00 | family=retry_exhausted | severity=medium | signature=retry_exhausted:44fbfad41b02c18b | release_blocking=True
@@ -30,5 +62,5 @@ Generated at: 2026-03-08T01:48:43.366148+00:00
 
 ## Operational Recommendation
 
-- Repeated failure signatures are present at levels that may indicate regression or release instability.
-- Investigate recurring signatures before promoting the current build or environment.
+- Repeated failure signatures or concentrated release-blocking patterns indicate elevated release risk.
+- Review recurring signatures, failure-family spikes, and recent blocker concentration before promotion.
