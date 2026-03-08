@@ -1,0 +1,172 @@
+{
+  "total_analyses": 8,
+  "release_blockers": 8,
+  "release_risk": "high",
+  "top_failure_families": [
+    {
+      "failure_family": "timeout",
+      "total_count": 7
+    },
+    {
+      "failure_family": "retry_exhausted",
+      "total_count": 1
+    }
+  ],
+  "top_recurring_signatures": [
+    {
+      "signature": "timeout:733da8a4e20740af",
+      "failure_family": "timeout",
+      "severity": "high",
+      "total_count": 7,
+      "first_seen": "2026-03-08T01:45:06.301515+00:00",
+      "last_seen": "2026-03-08T01:48:02.340941+00:00"
+    }
+  ],
+  "recent_analyses": [
+    {
+      "id": 8,
+      "created_at": "2026-03-08T01:48:43.114266+00:00",
+      "filename": "sample_dependency.log",
+      "predicted_issue": "retry_exhausted",
+      "failure_family": "retry_exhausted",
+      "severity": "medium",
+      "signature": "retry_exhausted:44fbfad41b02c18b",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 7,
+      "created_at": "2026-03-08T01:48:02.340941+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 6,
+      "created_at": "2026-03-08T01:48:01.593224+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 5,
+      "created_at": "2026-03-08T01:47:58.806046+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 4,
+      "created_at": "2026-03-08T01:47:43.749083+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 3,
+      "created_at": "2026-03-08T01:45:06.322692+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 2,
+      "created_at": "2026-03-08T01:45:06.312946+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    },
+    {
+      "id": 1,
+      "created_at": "2026-03-08T01:45:06.301515+00:00",
+      "filename": "sample.log",
+      "predicted_issue": "timeout",
+      "failure_family": "timeout",
+      "severity": "high",
+      "signature": "timeout:733da8a4e20740af",
+      "confidence": 0.95,
+      "release_blocking": true
+    }
+  ],
+  "recent_failure_family_distribution": [
+    {
+      "failure_family": "timeout",
+      "count": 4,
+      "percentage": 80.0
+    },
+    {
+      "failure_family": "retry_exhausted",
+      "count": 1,
+      "percentage": 20.0
+    }
+  ],
+  "recent_signature_concentration": {
+    "total_items": 5,
+    "unique_signatures": 2,
+    "top_signature": "timeout:733da8a4e20740af",
+    "top_signature_count": 4,
+    "top_signature_share_pct": 80.0
+  },
+  "window_comparison": {
+    "recent_window_size": 5,
+    "baseline_window_size": 3,
+    "recent_release_blocker_rate": 100.0,
+    "baseline_release_blocker_rate": 100.0,
+    "release_blocker_delta_pct_points": 0.0
+  },
+  "recent_family_trend": [
+    {
+      "failure_family": "timeout",
+      "recent_count": 4,
+      "baseline_count": 3,
+      "delta": 1
+    },
+    {
+      "failure_family": "retry_exhausted",
+      "recent_count": 1,
+      "baseline_count": 0,
+      "delta": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "type": "recurring_signature_concentration",
+      "severity": "high",
+      "message": "Top signature timeout:733da8a4e20740af accounts for 80.0% of recent analyses."
+    },
+    {
+      "type": "repeated_signature",
+      "severity": "high",
+      "message": "Signature timeout:733da8a4e20740af has recurred 7 times with severity high."
+    },
+    {
+      "type": "release_blocker_saturation",
+      "severity": "high",
+      "message": "All recent analyses are marked release-blocking."
+    }
+  ]
+}

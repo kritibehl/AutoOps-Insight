@@ -1,197 +1,291 @@
-# AutoOps Insight
+# AutoOps-Insight
 
-CI/CD Reliability Analytics Engine for Recurring Pipeline Failures
-
-AutoOps Insight analyzes CI/CD execution logs, detects recurring failure patterns, exports reliability metrics, and generates structured summaries to reduce mean time to diagnosis (MTTD).
-
-Designed as a reliability signal extraction layer for DevOps and platform teams.
+> A reliability analytics tool for CI and infrastructure failures — classifies logs, fingerprints recurring incident signatures, tracks historical recurrence, detects anomaly patterns, and generates release-risk summaries through an API, CLI, CI workflow, and dashboard.
 
 ---
 
-## Why This Exists
+## What It Does
 
-CI/CD systems fail repeatedly for the same root causes:
+AutoOps-Insight takes raw failure logs and turns them into structured, actionable reliability intelligence. Rather than simply labeling a log as "timeout", it produces a structured incident artifact with severity, likely cause, remediation steps, ownership, and a stable fingerprint for tracking recurrence over time.
 
-- Dependency resolution issues  
-- Test regressions  
-- Build tool misconfigurations  
-- Environment drift  
-- Resource exhaustion  
-
-But failure patterns are often buried inside verbose logs.
-
-AutoOps Insight transforms unstructured logs into:
-
-- Structured failure classification  
-- Prometheus-exported reliability metrics  
-- Human-readable failure summaries  
-- Recurrence detection signals  
-
-Focus: make CI failures observable, measurable, and trendable.
+The system answers questions like:
+- Has this failure happened before, and how often?
+- Is this build environment risky enough to block a release?
+- What failure patterns are dominating recent CI runs?
+- Which recurring signatures should the team prioritize?
 
 ---
 
-## System Overview
+## Architecture Overview
 
-Architecture:
-
-- React frontend (log upload + dashboard)
-- FastAPI backend (log parsing + classification)
-- ML classifier (TF-IDF + Logistic Regression)
-- Prometheus metrics endpoint
-- Optional LLM-based summarizer
-
-Flow:
-
-Logs → Feature Extraction → Failure Classification → Metrics Export → Dashboard Visualization
-
----
-
-## Core Capabilities
-
-### 1. Failure Type Classification
-
-- TF-IDF vectorization
-- Logistic Regression classifier
-- Predicts common CI/CD failure categories
-- Extensible label taxonomy
-
-Example failure classes:
-
-- Dependency Error
-- Test Failure
-- Compilation Error
-- Timeout
-- Configuration Error
+```
+Log Input
+   │
+   ├── Rule-Based Detection (deterministic patterns)
+   └── ML-Assisted Classification (TF-IDF + Logistic Regression)
+          │
+          ▼
+   Structured Incident Analysis
+   (severity, signature, cause, owner, release-blocking flag)
+          │
+          ▼
+   SQLite Persistence
+          │
+   ┌──────┴──────┐
+   │             │
+History API   Reports
+Recurrence    (JSON + Markdown)
+Detection     Release-Risk Score
+```
 
 ---
 
-### 2. Failure Recurrence Detection
+## Features
 
-- Aggregates classified failures
-- Identifies repeating error signatures
-- Enables trend tracking across runs
-- Designed for MTTR reduction workflows
+### Structured Incident Analysis
+Each log upload produces a full incident record — not just a label:
 
----
+| Field | Description |
+|---|---|
+| `predicted_issue` | Failure type (e.g. `timeout`, `oom`, `flaky_test_signature`) |
+| `confidence` | ML classification confidence |
+| `failure_family` | Normalized operational category |
+| `severity` | `low` / `medium` / `high` / `critical` |
+| `signature` | Stable fingerprint for recurrence tracking |
+| `summary` | Human-readable incident summary |
+| `likely_cause` | Taxonomy-based likely cause hint |
+| `first_remediation_step` | What to check first |
+| `next_debugging_action` | Suggested follow-up |
+| `probable_owner` | Probable service/team ownership hint |
+| `release_blocking` | Whether this should gate a release |
+| `evidence` | Supporting log lines |
+| `recurrence` | How many times this signature has appeared |
 
-### 3. Prometheus Metrics Export
+### Signature Fingerprinting
+Each incident gets a stable, normalized signature like `timeout:733da8a4e20740af`. This enables cross-run recurrence tracking — the system knows when two failures are the same underlying issue regardless of log noise.
 
-`/metrics` endpoint exposes:
+### Historical Recurrence Tracking
+Results are persisted in SQLite. The system tracks:
+- Total occurrence count per signature
+- First and last seen timestamps
+- Whether a signature qualifies as recurring
+- Failure family distribution over time
 
-- `ci_failure_total{type="dependency_error"}`
-- `ci_pipeline_runs_total`
-- `ci_failure_rate`
-- `ci_failure_recurring_total`
+### Release-Risk Reporting
+The report engine aggregates stored history into a release-risk summary (`low` / `medium` / `high` / `critical`) based on:
+- Presence of release-blocking incidents
+- Recurring signature concentration
+- Anomaly flags (e.g. one signature accounts for 80% of recent failures)
+- Window comparison vs. baseline blocker rate
 
-Integrates directly with Grafana dashboards.
+### Anomaly Detection
+Heuristic-based flags that surface meaningful signals without fake sophistication:
+- Signature concentration spike
+- High-count recurring failures
+- Family-level spikes
+- Release blocker saturation
 
-Operational value:
-Convert CI reliability into measurable SLO-aligned signals.
+### API
+Full FastAPI backend with endpoints for:
+- `POST /analyze` — analyze a log, persist the result
+- `GET /history/recent` — recent incident list
+- `GET /history/recurring` — top recurring signatures
+- `GET /history/signature/{signature}` — recurrence detail for one signature
+- `GET /history/analysis/{analysis_id}` — stored incident detail
+- `GET /reports/summary` — structured release-risk summary (JSON)
+- `GET /reports/markdown` — human-readable markdown report
+- `POST /reports/generate` — write report artifacts to disk
+- `GET /metrics` — Prometheus counters
+- `GET /healthz` — health check
 
----
-
-### 4. Structured Log Summarization
-
-Two modes:
-
-1. Deterministic keyword-based summarizer  
-2. Optional LLM-based summarizer (API-key gated)
-
-Goal: compress large CI logs into actionable summaries.
-
----
-
-## Tech Stack
-
-Frontend:
-- React (Vite)
-- Tailwind CSS
-- Axios
-
-Backend:
-- FastAPI
-- Python
-- scikit-learn
-- python-dotenv
-
-Machine Learning:
-- TF-IDF
-- Logistic Regression classifier
-
-Observability:
-- Prometheus metrics endpoint
-- Docker-ready deployment
-
----
-
-## Example Workflow
-
-1. Upload CI/CD log file  
-2. System predicts failure category  
-3. Failure count increments in Prometheus  
-4. Summary generated for fast diagnosis  
-5. Reliability metrics visible via `/metrics`
-
----
-
-## Design Principles
-
-AutoOps Insight was built around:
-
-- Deterministic classification pipeline
-- Observable reliability signals
-- Low-latency inference
-- Extendable failure taxonomy
-- Production-friendly integration
-
-It is intentionally structured as an analytics layer, not just a dashboard.
-
----
-## Performance Characteristics
-
-- Inference latency: ~5–20ms per log file (local benchmark, small dataset)
-- Stateless classification service
-- Constant-time metrics export via Prometheus client
-- Handles multi-thousand line logs without blocking frontend
-
-Designed for lightweight integration into existing CI environments.
-
-## Reliability Safeguards
-
-- Graceful handling of malformed or empty logs
-- Classifier fallback to "Unknown" category
-- Metrics export isolated from inference logic
-- Optional LLM summarizer fully decoupled from classification pipeline
-  
-## Local Setup
-
-### Clone
+### CLI
+Headless operation for CI and automation:
 
 ```bash
-git clone https://github.com/kritibehl/AutoOps-Insight.git
-cd AutoOps-Insight
+# Health check
+python cli.py health
 
-Backend
-cd backend
-pip install -r requirements.txt
+# Analyze a log file and persist it
+python cli.py analyze sample.log
+
+# Compact operator-style output (no JSON)
+python cli.py analyze sample.log --no-print-json
+
+# Generate release-risk report artifacts
+python cli.py report
+```
+
+### CI Integration
+GitHub Actions workflow that:
+- Runs CLI health check
+- Analyzes sample logs automatically
+- Generates markdown and JSON report artifacts
+- Uploads report artifacts and SQLite DB for inspection
+
+### Dashboard
+React frontend showing:
+- Release risk score, total analyses, blocker count, recurring signatures
+- Log upload with full incident breakdown
+- Anomaly panel
+- Recurring signatures table
+- Recent analyses list
+- Failure family distribution
+- Markdown report preview
+
+---
+
+## Detection Logic
+
+The classifier uses two layers:
+
+**Rule-based detection** checks for deterministic patterns:
+`timeout` · `dns_failure` · `connection_refused` · `tls_failure` · `retry_exhausted` · `oom` · `flaky_test_signature` · `dependency_unavailable` · `crash_loop` · `latency_spike`
+
+**ML fallback** uses:
+- TF-IDF vectorization
+- Logistic Regression trained on labeled log data (`ml_model/log_train.csv`)
+
+Each analysis record indicates whether rule-based detection or ML prediction was used.
+
+---
+
+## Failure Taxonomy
+
+Each failure family maps to reliability metadata:
+
+| Family | Severity | Release Blocking |
+|---|---|---|
+| `timeout` | high | yes |
+| `oom` | critical | yes |
+| `connection_refused` | high | yes |
+| `dns_failure` | high | yes |
+| `flaky_test_signature` | medium | no / context-dependent |
+| `retry_exhausted` | medium | yes |
+| `crash_loop` | critical | yes |
+| `dependency_error` | high | yes |
+| `dependency_unavailable` | high | yes |
+
+---
+
+## Project Structure
+
+```text
+AutoOps-Insight/
+├── main.py                     # FastAPI application and API routes
+├── cli.py                      # Headless CLI for analysis and reporting
+├── ml_predictor.py             # Structured incident analysis + ML-backed prediction
+├── classifiers/
+│   ├── rules.py                # Deterministic failure-family detection
+│   └── taxonomy.py             # Severity, ownership, remediation metadata
+├── analysis/
+│   ├── formatter.py            # Incident summary formatting
+│   ├── signatures.py           # Signature normalization and fingerprinting
+│   ├── trends.py               # Trend/distribution/window analysis
+│   └── anomalies.py            # Heuristic anomaly detection
+├── storage/
+│   └── history.py              # SQLite persistence and historical queries
+├── reports/
+│   ├── renderer.py             # Markdown/JSON report generation
+│   └── generated/              # Generated report artifacts
+├── schemas/
+│   └── incident.py             # Pydantic incident schema
+├── ml_model/
+│   ├── log_train.csv           # Training data
+│   ├── train_model.py          # Training script
+│   └── log_model.pkl           # Trained model + vectorizer
+├── autoops-ui/                 # React/Vite dashboard
+├── tests/                      # Unit and API integration tests
+└── .github/workflows/          # CI workflow
+```
+
+---
+
+## Getting Started
+
+**Install dependencies:**
+```bash
+python -m pip install -r requirements.txt
+```
+
+**Train or retrain the model:**
+```bash
+cd ml_model
+python train_model.py
+cd ..
+```
+
+**Start the API server:**
+```bash
 uvicorn main:app --reload
-Frontend
-cd frontend
+```
+
+**Run the CLI:**
+```bash
+python cli.py analyze sample.log
+python cli.py report
+```
+
+**Start the frontend:**
+```bash
+cd autoops-ui
 npm install
 npm run dev
-Prometheus Test
-curl http://localhost:8000/metrics
-Future Extensions
+```
 
-Historical run storage (PostgreSQL)
+---
 
-Failure fingerprinting via hashing
+## Tests
 
-Time-series trend analysis
+```bash
+python -m pytest -q
+```
 
-CI plugin integration (GitHub Actions / Jenkins)
+Current suite: **14 passing tests**
 
-Alerting hooks (Slack / Webhooks)
+Coverage includes:
+- Deterministic rule detection
+- Signature stability and normalization
+- Trend and anomaly heuristics
+- Markdown report rendering
+- API integration for `/analyze`, `/history/recent`, `/history/recurring`, and `/reports/summary`
 
-SLO-based CI reliability scoring
+---
+
+## Execution Modes
+
+AutoOps-Insight supports four usage modes:
+
+- **API mode** — upload logs and query history/report endpoints through FastAPI
+- **CLI mode** — analyze logs and generate reports headlessly for CI or local workflows
+- **Dashboard mode** — inspect release risk, recurring signatures, anomalies, and reports in the React UI
+- **CI mode** — run sample analyses and upload report artifacts through GitHub Actions
+
+---
+
+## Observability
+
+Prometheus counters exposed at `/metrics`:
+
+- `logs_processed_total`
+- `predict_requests_total`
+- `analyze_requests_total`
+- `summarize_requests_total`
+- `report_requests_total`
+
+---
+
+## What This Is Not (Yet)
+
+- Multi-source ingestion from system logs, containers, or metrics agents
+- Time-series anomaly detection with robust statistical baselines
+- Deep root-cause inference
+- Multi-tenant incident correlation
+- Production-scale storage or querying
+- Real release gating inside a deployment pipeline
+- Learned summarization or recommendation models
+
+---
+
+## Roles This Maps To
+
+SRE · Production Engineering · Release Engineering · Internal Tooling · Platform / Infrastructure

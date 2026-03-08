@@ -1,0 +1,12 @@
+cd ~/Desktop/projects/AutoOps-Insight
+cat > .dockerignore << 'EOF'
+.git
+__pycache__/
+*.pyc
+venv/
+.venv/
+node_modules/
+.DS_Store
+*.zip
+ml_model/
+EOF

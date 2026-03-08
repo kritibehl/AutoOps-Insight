@@ -1,5 +1,10 @@
-.env
-__pycache__/
+.venv/
 venv/
-node_modules/
-dist/
+__pycache__/
+*.pyc
+.DS_Store
+autoops.db
+deploy.zip
+autoops-ui/node_modules/
+autoops-ui/dist/
+reports/generated/
