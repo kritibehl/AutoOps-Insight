@@ -4,6 +4,7 @@ from pathlib import Path
 import typer
 
 from classifiers.rule_admin import update_rule
+from classifiers.simulation import simulate_rule_update, build_rule_diff
 from ml_predictor import analyze_log_text
 from reports.renderer import write_report_files, render_markdown_report
 from storage.audit import init_audit_db, get_recent_audit_events
@@ -13,6 +14,8 @@ from storage.history import (
     get_signature_stats,
     get_report_summary,
     get_analysis_by_id,
+    get_all_analyses,
+    get_audit_event_by_id,
 )
 
 app = typer.Typer(help="AutoOps Insight CLI")
@@ -117,6 +120,77 @@ def update_rule_cmd(
 
     updated = update_rule(rule_id, {field: parsed_value}, actor=actor)
     typer.echo(json.dumps(updated, indent=2))
+
+
+@app.command()
+def simulate_rule(
+    rule_id: str,
+    field: str,
+    value: str,
+):
+    ensure_ready()
+
+    parsed_value: object = value
+    lowered = value.lower()
+    if lowered == "true":
+        parsed_value = True
+    elif lowered == "false":
+        parsed_value = False
+
+    incidents = get_all_analyses()
+    result = simulate_rule_update(rule_id, {field: parsed_value}, incidents)
+    typer.echo(json.dumps(result, indent=2))
+
+
+@app.command()
+def rule_diff(rule_id: str, field: str, value: str):
+    ensure_ready()
+
+    parsed_value: object = value
+    lowered = value.lower()
+    if lowered == "true":
+        parsed_value = True
+    elif lowered == "false":
+        parsed_value = False
+
+    incidents = get_all_analyses()
+    result = simulate_rule_update(rule_id, {field: parsed_value}, incidents)
+    diff = build_rule_diff(result["before"], result["after"])
+    typer.echo(json.dumps({
+        "rule_id": rule_id,
+        "diff": diff,
+    }, indent=2))
+
+
+@app.command()
+def rollback_preview(audit_id: int):
+    ensure_ready()
+
+    event = get_audit_event_by_id(audit_id)
+    if event is None:
+        typer.echo(f"Error: audit event not found: {audit_id}")
+        raise typer.Exit(code=1)
+
+    if event["event_type"] != "rule_update":
+        typer.echo("Error: rollback preview only supports rule_update events")
+        raise typer.Exit(code=1)
+
+    before = event["before"] or {}
+    after = event["after"] or {}
+    rollback_updates = {}
+
+    for key, value in before.items():
+        if after.get(key) != value:
+            rollback_updates[key] = value
+
+    incidents = get_all_analyses()
+    result = simulate_rule_update(event["rule_id"], rollback_updates, incidents)
+    typer.echo(json.dumps({
+        "audit_event_id": audit_id,
+        "rule_id": event["rule_id"],
+        "rollback_updates": rollback_updates,
+        "impact_preview": result,
+    }, indent=2))
 
 
 @app.command()

@@ -306,3 +306,44 @@ def get_report_summary():
         "recent_family_trend": family_trend,
         "anomalies": anomalies,
     }
+
+def get_all_analyses(limit: int = 1000):
+    with get_conn() as conn:
+        rows = conn.execute("""
+            SELECT *
+            FROM analyses
+            ORDER BY created_at DESC
+            LIMIT ?
+        """, (limit,)).fetchall()
+
+    items = []
+    for row in rows:
+        item = dict(row)
+        item["release_blocking"] = bool(item["release_blocking"])
+        item["evidence"] = json.loads(item.get("evidence_json") or "[]")
+        item["raw_log_text"] = "\n".join(x.get("text", "") for x in item["evidence"])
+        items.append(item)
+    return items
+
+
+def get_audit_event_by_id(audit_id: int):
+    with get_conn() as conn:
+        row = conn.execute("""
+            SELECT id, event_type, rule_id, actor, timestamp, change_summary, before_json, after_json
+            FROM audit_log
+            WHERE id = ?
+        """, (audit_id,)).fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "id": row["id"],
+        "event_type": row["event_type"],
+        "rule_id": row["rule_id"],
+        "actor": row["actor"],
+        "timestamp": row["timestamp"],
+        "change_summary": row["change_summary"],
+        "before": json.loads(row["before_json"]) if row["before_json"] else None,
+        "after": json.loads(row["after_json"]) if row["after_json"] else None,
+    }
