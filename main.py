@@ -5,9 +5,11 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import PlainTextResponse
 from prometheus_client import Counter, generate_latest
 
+from classifiers.config_loader import load_rules_config
 from genai_summarizer import summarize_log
 from ml_predictor import predict_log_issue, analyze_log_text
 from reports.renderer import render_markdown_report, write_report_files
+from storage.audit import init_audit_db, get_recent_audit_events
 from storage.history import (
     init_db,
     record_analysis,
@@ -21,6 +23,7 @@ from storage.history import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    init_audit_db()
     yield
 
 app = FastAPI(title="AutoOps Insight", lifespan=lifespan)
@@ -44,6 +47,16 @@ report_requests = Counter("report_requests_total", "Number of report generation 
 @app.get("/")
 def root():
     return {"message": "AutoOps Insight is running!"}
+
+
+@app.get("/rules")
+def rules():
+    return {"items": load_rules_config()}
+
+
+@app.get("/audit/recent")
+def audit_recent(limit: int = 20):
+    return {"items": get_recent_audit_events(limit=limit)}
 
 
 @app.post("/predict")

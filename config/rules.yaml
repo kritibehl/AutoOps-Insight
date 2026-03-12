@@ -1,0 +1,116 @@
+rules:
+- id: oom_rule
+  failure_family: oom
+  pattern: (out of memory|oomkilled|oom killed|killed process .* out of memory)
+  severity: critical
+  release_blocking: true
+  probable_owner: service-owner
+  likely_cause: process or container exceeded memory limits
+  first_remediation_step: inspect memory usage and container/resource limits
+  next_debugging_action: compare heap growth, object retention, and workload spikes
+- id: dns_failure_rule
+  failure_family: dns_failure
+  pattern: (temporary failure in name resolution|getaddrinfo|no such host|dns)
+  severity: high
+  release_blocking: true
+  probable_owner: platform-networking
+  likely_cause: DNS resolution failed for an upstream dependency or service endpoint
+  first_remediation_step: verify resolver output and service hostname configuration
+  next_debugging_action: check network policy, DNS records, and environment-specific
+    overrides
+- id: connection_refused_rule
+  failure_family: connection_refused
+  pattern: (connection refused|actively refused)
+  severity: high
+  release_blocking: true
+  probable_owner: service-owner
+  likely_cause: target service was unavailable or not accepting connections
+  first_remediation_step: verify target service health and listening port availability
+  next_debugging_action: check rollout state, startup logs, readiness, and dependency
+    startup order
+- id: tls_failure_rule
+  failure_family: tls_failure
+  pattern: '(tls handshake|certificate verify failed|x509|ssl: certificate)'
+  severity: high
+  release_blocking: true
+  probable_owner: platform-security
+  likely_cause: TLS handshake or certificate validation failed
+  first_remediation_step: inspect certificate validity, trust chain, and hostname
+    matching
+  next_debugging_action: compare recent certificate or endpoint changes
+- id: retry_exhausted_rule
+  failure_family: retry_exhausted
+  pattern: (retry exhausted|max retries exceeded|too many retries)
+  severity: medium
+  release_blocking: true
+  probable_owner: service-owner
+  likely_cause: operation kept failing until retry budget was exhausted
+  first_remediation_step: identify the first failing dependency or request in the
+    retry chain
+  next_debugging_action: inspect retry policy, backoff behavior, and downstream error
+    rates
+- id: timeout_rule
+  failure_family: timeout
+  pattern: (timed out|timeout|deadline exceeded)
+  severity: high
+  release_blocking: true
+  probable_owner: platform-networking
+  likely_cause: operation exceeded timeout threshold or a dependency responded too
+    slowly
+  first_remediation_step: inspect the exact timed-out operation and compare recent
+    latency trends
+  next_debugging_action: check downstream service latency, retries, and resource saturation
+- id: dependency_unavailable_rule
+  failure_family: dependency_unavailable
+  pattern: (service unavailable|503|dependency unavailable|upstream unavailable)
+  severity: high
+  release_blocking: true
+  probable_owner: platform-or-service-owner
+  likely_cause: required dependency or upstream service was unavailable
+  first_remediation_step: verify dependency health and deployment state
+  next_debugging_action: check service discovery, health checks, and recent infrastructure
+    changes
+- id: crash_loop_rule
+  failure_family: crash_loop
+  pattern: (crashloopbackoff|back-off restarting failed container|segmentation fault|fatal
+    signal)
+  severity: critical
+  release_blocking: true
+  probable_owner: service-owner
+  likely_cause: service repeatedly crashed and restarted
+  first_remediation_step: inspect earliest crash stack trace and startup configuration
+  next_debugging_action: check readiness, dependency initialization, and bad startup
+    inputs
+- id: flaky_test_rule
+  failure_family: flaky_test_signature
+  pattern: (flaky|intermittent|non-deterministic|passed on retry|rerun passed)
+  severity: medium
+  release_blocking: false
+  probable_owner: qa-or-test-infra
+  likely_cause: intermittent or nondeterministic test failure pattern detected
+  first_remediation_step: rerun the failing test with environment and timing details
+    captured
+  next_debugging_action: look for race conditions, order dependence, and shared state
+    leakage
+- id: latency_spike_rule
+  failure_family: latency_spike
+  pattern: (latency spike|p95|p99|slow request|response time)
+  severity: medium
+  release_blocking: false
+  probable_owner: service-owner
+  likely_cause: latency rose significantly above expected baseline
+  first_remediation_step: compare recent latency distributions against normal workload
+    periods
+  next_debugging_action: inspect dependency latency, contention, and saturation signals
+- id: dependency_error_rule
+  failure_family: dependency_error
+  pattern: (dependency error|module not found|package .* not found|artifact .* not
+    found|failed to resolve)
+  severity: high
+  release_blocking: true
+  probable_owner: build-or-service-owner
+  likely_cause: build or runtime dependency resolution failed
+  first_remediation_step: inspect package, artifact, or service dependency failures
+    in the log
+  next_debugging_action: compare dependency versions, registry access, and environment
+    drift

@@ -96,3 +96,19 @@ FAILURE_TAXONOMY = {
         "release_blocking": False,
     },
 }
+
+
+def resolve_taxonomy(failure_family: str, rule_override: dict | None = None) -> dict:
+    base = dict(FAILURE_TAXONOMY.get(failure_family, FAILURE_TAXONOMY["unknown"]))
+    if rule_override:
+        for key in [
+            "severity",
+            "likely_cause",
+            "first_remediation_step",
+            "next_debugging_action",
+            "probable_owner",
+            "release_blocking",
+        ]:
+            if key in rule_override:
+                base[key] = rule_override[key]
+    return base

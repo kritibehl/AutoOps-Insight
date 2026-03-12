@@ -1,27 +1,29 @@
+from __future__ import annotations
+
 import re
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict, Any
 
-RULES: List[Tuple[str, re.Pattern[str]]] = [
-    ("oom", re.compile(r"(out of memory|oomkilled|oom killed|killed process .* out of memory)", re.I)),
-    ("dns_failure", re.compile(r"(temporary failure in name resolution|getaddrinfo|no such host|dns)", re.I)),
-    ("connection_refused", re.compile(r"(connection refused|actively refused)", re.I)),
-    ("tls_failure", re.compile(r"(tls handshake|certificate verify failed|x509|ssl: certificate)", re.I)),
-    ("retry_exhausted", re.compile(r"(retry exhausted|max retries exceeded|too many retries)", re.I)),
-    ("timeout", re.compile(r"(timed out|timeout|deadline exceeded)", re.I)),
-    ("dependency_unavailable", re.compile(r"(service unavailable|503|dependency unavailable|upstream unavailable)", re.I)),
-    ("crash_loop", re.compile(r"(crashloopbackoff|back-off restarting failed container|segmentation fault|fatal signal)", re.I)),
-    ("flaky_test_signature", re.compile(r"(flaky|intermittent|non-deterministic|passed on retry|rerun passed)", re.I)),
-    ("latency_spike", re.compile(r"(latency spike|p95|p99|slow request|response time)", re.I)),
-    ("dependency_error", re.compile(r"(dependency error|module not found|package .* not found|artifact .* not found|failed to resolve)", re.I)),
-]
+from classifiers.config_loader import load_rules_config
+
+CompiledRule = Tuple[Dict[str, Any], re.Pattern[str]]
 
 
-def detect_failure_family(log_text: str) -> Tuple[Optional[str], Optional[str]]:
-    for family, pattern in RULES:
+def compile_rules() -> List[CompiledRule]:
+    compiled: List[CompiledRule] = []
+    for rule in load_rules_config():
+        pattern = rule.get("pattern")
+        if not pattern:
+            continue
+        compiled.append((rule, re.compile(pattern, re.I)))
+    return compiled
+
+
+def detect_failure_family(log_text: str) -> Tuple[Optional[str], Optional[str], Optional[Dict[str, Any]]]:
+    for rule, pattern in compile_rules():
         match = pattern.search(log_text)
         if match:
-            return family, match.group(0)
-    return None, None
+            return rule["failure_family"], match.group(0), rule
+    return None, None, None
 
 
 def extract_evidence_lines(log_text: str, max_lines: int = 5):
