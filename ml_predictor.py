@@ -4,7 +4,7 @@ import pickle
 from analysis.formatter import build_summary
 from analysis.signatures import compute_signature
 from classifiers.rules import detect_failure_family, extract_evidence_lines
-from classifiers.taxonomy import FAILURE_TAXONOMY
+from classifiers.taxonomy import resolve_taxonomy
 from schemas.incident import IncidentAnalysis, EvidenceLine
 
 MODEL_PATH = os.getenv("MODEL_PATH", "ml_model/log_model.pkl")
@@ -42,7 +42,7 @@ def _predict_with_ml(log_text: str):
 
 
 def analyze_log_text(log_text: str) -> dict:
-    rule_family, _ = detect_failure_family(log_text)
+    rule_family, _, matched_rule = detect_failure_family(log_text)
     ml_label, ml_confidence, ml_used = _predict_with_ml(log_text)
 
     if rule_family:
@@ -50,11 +50,12 @@ def analyze_log_text(log_text: str) -> dict:
         confidence = 0.95
         used_rule_based_detection = True
     else:
-        final_family = ml_label if ml_label in FAILURE_TAXONOMY else "unknown"
+        final_family = ml_label
         confidence = ml_confidence
         used_rule_based_detection = False
+        matched_rule = None
 
-    taxonomy = FAILURE_TAXONOMY.get(final_family, FAILURE_TAXONOMY["unknown"])
+    taxonomy = resolve_taxonomy(final_family, matched_rule)
     evidence_pairs = extract_evidence_lines(log_text)
     summary = build_summary(final_family, evidence_pairs)
     signature = compute_signature(log_text, final_family)

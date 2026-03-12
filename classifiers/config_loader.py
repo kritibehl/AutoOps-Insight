@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from functools import lru_cache
 from typing import Any, Dict, List
 
 import yaml
@@ -9,7 +8,6 @@ import yaml
 RULES_CONFIG_PATH = os.getenv("AUTOOPS_RULES_PATH", "config/rules.yaml")
 
 
-@lru_cache(maxsize=1)
 def load_rules_config() -> List[Dict[str, Any]]:
     with open(RULES_CONFIG_PATH, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
@@ -20,5 +18,4 @@ def load_rules_config() -> List[Dict[str, Any]]:
 
 
 def reload_rules_config() -> List[Dict[str, Any]]:
-    load_rules_config.cache_clear()
     return load_rules_config()
