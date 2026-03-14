@@ -1,6 +1,6 @@
 # AutoOps-Insight
 
-> A reliability analytics tool for CI and infrastructure failures — classifies logs, fingerprints recurring incident signatures, tracks historical recurrence, detects anomaly patterns, and generates release-risk summaries.
+> A reliability analytics tool for CI and infrastructure failures — classifies logs, fingerprints recurring incident signatures, tracks recurrence, previews rule-change impact, and generates release-risk summaries.
 
 ---
 
@@ -232,6 +232,7 @@ npm run dev
 ## CI Integration
 
 A GitHub Actions workflow automatically:
+
 - Runs a CLI health check
 - Analyzes sample logs
 - Generates markdown and JSON report artifacts
@@ -267,7 +268,14 @@ python cli.py rollback-preview 1
 python cli.py report
 ```
 
-**Operator Workflow Steps** — typical admin flow: update rule → inspect diff → preview impacted incidents → apply or rollback.
+### Operator Workflow Steps
+
+Typical admin flow:
+
+- update rule
+- inspect diff
+- preview impacted incidents
+- apply or rollback
 
 ---
 
@@ -424,7 +432,7 @@ AutoOps-Insight/
 python -m pytest -q
 ```
 
-Current suite: **16 passing tests**, covering:
+Current test suite: **16 passing tests**, covering:
 - Deterministic rule detection
 - Signature stability and normalization
 - Trend and anomaly heuristics
@@ -437,6 +445,7 @@ Current suite: **16 passing tests**, covering:
 ## Observability
 
 Prometheus counters exposed at `/metrics`:
+
 - `logs_processed_total`
 - `predict_requests_total`
 - `analyze_requests_total`
@@ -455,30 +464,38 @@ Detection rules live in `config/rules.yaml`. Failure-family patterns, severity, 
 
 | Mode | Description |
 |---|---|
-| API | Upload logs and query history/report endpoints via FastAPI |
-| CLI | Analyze logs, replay incidents, simulate rule changes, and generate reports headlessly |
-| Dashboard | Inspect release risk, recurring signatures, anomalies, and reports in the React UI |
-| CI | Run sample analyses and upload report artifacts via GitHub Actions |
+| **API** | Upload logs and query history/report endpoints via FastAPI |
+| **CLI** | Analyze logs, replay incidents, simulate rule changes, and generate reports headlessly |
+| **Dashboard** | Inspect release risk, recurring signatures, anomalies, and reports in the React UI |
+| **CI** | Run sample analyses and upload report artifacts via GitHub Actions |
 
 ---
 
 ## Runbook
 
-A sample operator workflow is included in `docs/runbook.md`, covering:
-- Latest log analysis
-- Recurrence inspection
-- Incident replay
-- Rule review
-- Audit trail inspection
-- Release-risk triage
+A sample operator workflow is included in [`docs/runbook.md`](docs/runbook.md), covering:
+- latest log analysis
+- recurrence inspection
+- incident replay
+- rule review
+- audit trail inspection
+- release-risk triage
 
 ---
 
 ## Screenshots
 
-**Audit Log Traceability** — rule update with actor, timestamp, and before/after diff.
+These screenshots show the operator workflow for audit-backed rule changes and replayable incident triage.
 
-**Incident Replay and Test Validation** — replayed stored incident with recurrence metadata and passing test run.
+### Audit Log Traceability
+Rule update with actor, timestamp, and before/after diff.
+
+![AutoOps audit log](docs/screenshots/autoops-audit-log.png)
+
+### Incident Replay and Test Validation
+Replayed stored incident with recurrence metadata and passing test run.
+
+![AutoOps incident replay](docs/screenshots/autoops-incident-replay.png)
 
 ---
 
