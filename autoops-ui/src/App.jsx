@@ -2,380 +2,249 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
-function Section({ title, children, right }) {
+function JsonBlock({ data }) {
   return (
-    <section className="card">
-      <div className="section-header">
-        <h2>{title}</h2>
-        {right ? <div>{right}</div> : null}
-      </div>
+    <pre className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs overflow-auto whitespace-pre-wrap">
+      {JSON.stringify(data, null, 2)}
+    </pre>
+  );
+}
+
+function SectionCard({ title, children }) {
+  return (
+    <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-4">
+      <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
       {children}
     </section>
   );
 }
 
-function StatCard({ label, value, tone = "default" }) {
-  return (
-    <div className={`stat-card stat-${tone}`}>
-      <div className="stat-label">{label}</div>
-      <div className="stat-value">{value}</div>
-    </div>
-  );
-}
-
-function KeyValue({ label, value }) {
-  return (
-    <div className="kv-row">
-      <span className="kv-label">{label}</span>
-      <span className="kv-value">{value}</span>
-    </div>
-  );
-}
-
-function Badge({ children, tone = "default" }) {
-  return <span className={`badge badge-${tone}`}>{children}</span>;
-}
-
-function toneForSeverity(severity) {
-  if (severity === "critical") return "critical";
-  if (severity === "high") return "high";
-  if (severity === "medium") return "medium";
-  return "default";
-}
-
-function toneForRisk(risk) {
-  if (risk === "critical") return "critical";
-  if (risk === "high") return "high";
-  if (risk === "medium") return "medium";
-  return "default";
-}
-
 export default function App() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
-  const [analyzeResult, setAnalyzeResult] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
   const [reportSummary, setReportSummary] = useState(null);
-  const [recentHistory, setRecentHistory] = useState([]);
-  const [recurringHistory, setRecurringHistory] = useState([]);
-  const [markdownReport, setMarkdownReport] = useState("");
-  const [loadingAnalyze, setLoadingAnalyze] = useState(false);
-  const [loadingDashboard, setLoadingDashboard] = useState(false);
-  const [error, setError] = useState("");
+  const [auditItems, setAuditItems] = useState([]);
+  const [selectedAudit, setSelectedAudit] = useState(null);
+  const [rollbackPreview, setRollbackPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const releaseRiskTone = useMemo(
-    () => toneForRisk(reportSummary?.release_risk),
-    [reportSummary]
-  );
+  const hasAuditItems = auditItems.length > 0;
 
-  async function loadDashboard() {
-    setLoadingDashboard(true);
-    try {
-      const [summaryRes, recentRes, recurringRes, markdownRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/reports/summary`),
-        axios.get(`${API_BASE_URL}/history/recent`),
-        axios.get(`${API_BASE_URL}/history/recurring`),
-        axios.get(`${API_BASE_URL}/reports/markdown`),
-      ]);
+  const stats = useMemo(() => {
+    if (!reportSummary) return null;
+    return [
+      { label: "Release Risk", value: reportSummary.release_risk || "unknown" },
+      { label: "Total Analyses", value: reportSummary.total_analyses ?? 0 },
+      { label: "Release Blockers", value: reportSummary.release_blockers ?? 0 },
+      {
+        label: "Recurring Signatures",
+        value: reportSummary.top_recurring_signatures?.length ?? 0,
+      },
+    ];
+  }, [reportSummary]);
 
-      setReportSummary(summaryRes.data);
-      setRecentHistory(recentRes.data.items || []);
-      setRecurringHistory(recurringRes.data.items || []);
-      setMarkdownReport(markdownRes.data || "");
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load dashboard data from backend.");
-    } finally {
-      setLoadingDashboard(false);
-    }
+  async function refreshReport() {
+    const { data } = await axios.get(`${API_BASE_URL}/reports/summary`);
+    setReportSummary(data);
+  }
+
+  async function refreshAudit() {
+    const { data } = await axios.get(`${API_BASE_URL}/audit/recent`);
+    setAuditItems(data.items || []);
   }
 
   useEffect(() => {
-    loadDashboard();
+    refreshReport().catch(console.error);
+    refreshAudit().catch(console.error);
   }, []);
 
   async function handleFileChange(e) {
     const uploadedFile = e.target.files?.[0];
-    setFile(uploadedFile || null);
-
-    if (!uploadedFile) {
-      setPreview("");
-      return;
-    }
-
+    if (!uploadedFile) return;
+    setFile(uploadedFile);
     const text = await uploadedFile.text();
     setPreview(text.slice(0, 3000));
   }
 
   async function handleAnalyze() {
     if (!file) {
-      setError("Please choose a log file first.");
+      alert("Please select a log file first.");
       return;
     }
-
-    setError("");
-    setLoadingAnalyze(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
+    setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/analyze`, formData);
-      setAnalyzeResult(response.data);
-      await loadDashboard();
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const { data } = await axios.post(`${API_BASE_URL}/analyze`, formData);
+      setAnalysis(data);
+
+      await refreshReport();
+      await refreshAudit();
     } catch (err) {
       console.error(err);
-      setError("Analysis failed. Check that the backend is running.");
+      alert("Analyze request failed.");
     } finally {
-      setLoadingAnalyze(false);
+      setLoading(false);
+    }
+  }
+
+  async function handleSelectAudit(auditId) {
+    try {
+      const { data } = await axios.get(`${API_BASE_URL}/audit/${auditId}`);
+      setSelectedAudit(data);
+      setRollbackPreview(null);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load audit event.");
+    }
+  }
+
+  async function handleRollbackPreview(auditId) {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE_URL}/audit/${auditId}/rollback-preview`
+      );
+      setRollbackPreview(data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load rollback preview.");
     }
   }
 
   return (
-    <div className="app-shell">
-      <div className="app-container">
-        <header className="hero">
-          <div>
-            <h1>AutoOps Insight</h1>
-            <p>
-              Reliability analytics for CI and infrastructure failures: structured incident
-              analysis, recurring signature tracking, anomaly heuristics, and release-risk
-              reporting.
-            </p>
-          </div>
-          <div className="hero-actions">
-            <button className="primary-btn" onClick={loadDashboard} disabled={loadingDashboard}>
-              {loadingDashboard ? "Refreshing..." : "Refresh Dashboard"}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-bold">AutoOps-Insight</h1>
+          <p className="text-slate-600">
+            Reliability analytics for CI and infrastructure failures with audit-backed rule previews.
+          </p>
         </header>
 
-        {error ? <div className="error-banner">{error}</div> : null}
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {stats.map((item) => (
+              <div
+                key={item.label}
+                className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4"
+              >
+                <div className="text-sm text-slate-500">{item.label}</div>
+                <div className="text-2xl font-semibold mt-2">{item.value}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <div className="stats-grid">
-          <StatCard
-            label="Release Risk"
-            value={reportSummary?.release_risk || "unknown"}
-            tone={releaseRiskTone}
-          />
-          <StatCard
-            label="Total Analyses"
-            value={reportSummary?.total_analyses ?? 0}
-          />
-          <StatCard
-            label="Release Blockers"
-            value={reportSummary?.release_blockers ?? 0}
-            tone="high"
-          />
-          <StatCard
-            label="Recurring Signatures"
-            value={recurringHistory.length}
-            tone="medium"
-          />
-        </div>
+        <SectionCard title="Analyze Log">
+          <div className="flex flex-col md:flex-row gap-3 md:items-center">
+            <input
+              type="file"
+              accept=".log,.txt"
+              onChange={handleFileChange}
+              className="block w-full text-sm"
+            />
+            <button
+              onClick={handleAnalyze}
+              disabled={loading}
+              className="px-4 py-2 rounded-xl bg-slate-900 text-white disabled:opacity-50"
+            >
+              {loading ? "Analyzing..." : "Analyze"}
+            </button>
+          </div>
 
-        <div className="two-col">
-          <Section title="Analyze Log">
-            <div className="upload-box">
-              <input type="file" accept=".txt,.log" onChange={handleFileChange} />
-              <button className="primary-btn" onClick={handleAnalyze} disabled={loadingAnalyze}>
-                {loadingAnalyze ? "Analyzing..." : "Analyze Log"}
-              </button>
+          {preview && (
+            <div>
+              <h3 className="font-medium mb-2">Log Preview</h3>
+              <pre className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs overflow-auto whitespace-pre-wrap">
+                {preview}
+              </pre>
             </div>
+          )}
 
-            {preview ? (
-              <>
-                <h3 className="subheading">Log Preview</h3>
-                <pre className="code-block">{preview}</pre>
-              </>
-            ) : null}
-          </Section>
-
-          <Section
-            title="Release Risk Summary"
-            right={
-              reportSummary?.release_risk ? (
-                <Badge tone={releaseRiskTone}>{reportSummary.release_risk}</Badge>
-              ) : null
-            }
-          >
-            <div className="kv-list">
-              <KeyValue label="Total analyses" value={reportSummary?.total_analyses ?? 0} />
-              <KeyValue label="Release blockers" value={reportSummary?.release_blockers ?? 0} />
-              <KeyValue
-                label="Recent blocker rate"
-                value={`${reportSummary?.window_comparison?.recent_release_blocker_rate ?? 0}%`}
-              />
-              <KeyValue
-                label="Baseline blocker rate"
-                value={`${reportSummary?.window_comparison?.baseline_release_blocker_rate ?? 0}%`}
-              />
+          {analysis && (
+            <div className="space-y-3">
+              <h3 className="font-medium">Latest Incident</h3>
+              <JsonBlock data={analysis} />
             </div>
-          </Section>
-        </div>
+          )}
+        </SectionCard>
 
-        <div className="two-col">
-          <Section title="Current Incident Analysis">
-            {analyzeResult ? (
-              <>
-                <div className="badges-row">
-                  <Badge tone={toneForSeverity(analyzeResult.severity)}>
-                    severity: {analyzeResult.severity}
-                  </Badge>
-                  <Badge tone={analyzeResult.release_blocking ? "high" : "default"}>
-                    {analyzeResult.release_blocking ? "release-blocking" : "non-blocking"}
-                  </Badge>
-                  <Badge tone="medium">{analyzeResult.failure_family}</Badge>
-                </div>
-
-                <div className="kv-list top-space">
-                  <KeyValue label="Predicted issue" value={analyzeResult.predicted_issue} />
-                  <KeyValue label="Confidence" value={analyzeResult.confidence} />
-                  <KeyValue label="Signature" value={analyzeResult.signature} />
-                  <KeyValue
-                    label="Recurring"
-                    value={analyzeResult.recurrence?.is_recurring ? "yes" : "no"}
-                  />
-                  <KeyValue
-                    label="Occurrence count"
-                    value={analyzeResult.recurrence?.total_count ?? 0}
-                  />
-                  <KeyValue label="Probable owner" value={analyzeResult.probable_owner} />
-                </div>
-
-                <h3 className="subheading">Summary</h3>
-                <p className="body-copy">{analyzeResult.summary}</p>
-
-                <h3 className="subheading">Recommended Next Steps</h3>
-                <ul className="list">
-                  <li>{analyzeResult.likely_cause}</li>
-                  <li>{analyzeResult.first_remediation_step}</li>
-                  <li>{analyzeResult.next_debugging_action}</li>
-                </ul>
-
-                <h3 className="subheading">Evidence</h3>
-                <div className="stack">
-                  {(analyzeResult.evidence || []).map((item, idx) => (
-                    <div className="evidence-item" key={`${item.line_number}-${idx}`}>
-                      <div className="evidence-line">line {item.line_number}</div>
-                      <div className="evidence-text">{item.text}</div>
-                    </div>
-                  ))}
-                </div>
-              </>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <SectionCard title="Audit History">
+            {!hasAuditItems ? (
+              <p className="text-sm text-slate-500">No audit events yet.</p>
             ) : (
-              <p className="muted">
-                Analyze a log to see structured incident output, recurrence information, and
-                operational recommendations.
+              <div className="space-y-3">
+                {auditItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-2"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                      <div>
+                        <div className="font-medium">
+                          {item.event_type} · {item.rule_id}
+                        </div>
+                        <div className="text-sm text-slate-500">
+                          actor={item.actor} · {item.timestamp}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleSelectAudit(item.id)}
+                          className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-sm"
+                        >
+                          View Diff
+                        </button>
+                        <button
+                          onClick={() => handleRollbackPreview(item.id)}
+                          className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-sm"
+                        >
+                          Rollback Preview
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-sm text-slate-600">
+                      {item.change_summary}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+
+          <SectionCard title="Rule Diff / Rollback Preview">
+            {selectedAudit ? (
+              <div className="space-y-4">
+                <div>
+                  <div className="font-medium">Selected Audit Event</div>
+                  <div className="text-sm text-slate-500">
+                    audit_id={selectedAudit.id} · rule_id={selectedAudit.rule_id}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-medium mb-2">Field Diff</h3>
+                  <JsonBlock data={selectedAudit.diff || {}} />
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500">
+                Select an audit event to inspect the rule diff.
               </p>
             )}
-          </Section>
 
-          <Section title="Detected Anomalies">
-            {reportSummary?.anomalies?.length ? (
-              <div className="stack">
-                {reportSummary.anomalies.map((item, idx) => (
-                  <div className="anomaly-item" key={`${item.type}-${idx}`}>
-                    <div className="anomaly-top">
-                      <Badge tone={toneForSeverity(item.severity)}>{item.severity}</Badge>
-                      <span className="mono">{item.type}</span>
-                    </div>
-                    <div className="body-copy">{item.message}</div>
-                  </div>
-                ))}
+            {rollbackPreview && (
+              <div className="space-y-2">
+                <h3 className="font-medium">Rollback Impact Preview</h3>
+                <JsonBlock data={rollbackPreview} />
               </div>
-            ) : (
-              <p className="muted">No anomaly heuristics triggered.</p>
             )}
-          </Section>
-        </div>
-
-        <div className="two-col">
-          <Section title="Recurring Signatures">
-            {recurringHistory.length ? (
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Signature</th>
-                      <th>Family</th>
-                      <th>Severity</th>
-                      <th>Count</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recurringHistory.map((item) => (
-                      <tr key={item.signature}>
-                        <td className="mono">{item.signature}</td>
-                        <td>{item.failure_family}</td>
-                        <td>
-                          <Badge tone={toneForSeverity(item.severity)}>{item.severity}</Badge>
-                        </td>
-                        <td>{item.total_count}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="muted">No recurring signatures yet.</p>
-            )}
-          </Section>
-
-          <Section title="Recent Analyses">
-            {recentHistory.length ? (
-              <div className="stack">
-                {recentHistory.slice(0, 8).map((item) => (
-                  <div className="history-item" key={item.id}>
-                    <div className="history-top">
-                      <span className="mono">id={item.id}</span>
-                      <Badge tone={toneForSeverity(item.severity)}>{item.severity}</Badge>
-                    </div>
-                    <div className="body-copy">
-                      {item.failure_family} · {item.filename || "unknown file"}
-                    </div>
-                    <div className="history-meta">
-                      <span className="mono">{item.signature}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="muted">No analysis history yet.</p>
-            )}
-          </Section>
-        </div>
-
-        <div className="two-col">
-          <Section title="Recent Failure Family Distribution">
-            {reportSummary?.recent_failure_family_distribution?.length ? (
-              <div className="stack">
-                {reportSummary.recent_failure_family_distribution.map((item) => (
-                  <div className="dist-row" key={item.failure_family}>
-                    <div className="dist-label">{item.failure_family}</div>
-                    <div className="dist-bar-wrap">
-                      <div
-                        className="dist-bar"
-                        style={{ width: `${Math.max(item.percentage, 4)}%` }}
-                      />
-                    </div>
-                    <div className="dist-value">{item.percentage}%</div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="muted">No recent distribution available.</p>
-            )}
-          </Section>
-
-          <Section title="Markdown Report Preview">
-            {markdownReport ? (
-              <pre className="code-block tall">{markdownReport}</pre>
-            ) : (
-              <p className="muted">No markdown report generated yet.</p>
-            )}
-          </Section>
+          </SectionCard>
         </div>
       </div>
     </div>
