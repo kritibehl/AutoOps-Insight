@@ -113,10 +113,7 @@ Simulation preview answers:
 
 ### Rule Diff and Rollback Preview
 
-AutoOps-Insight can show:
-- A field-level diff between the current and simulated rule
-- A rollback preview for an audit event
-- The expected impact of reverting a previous rule update before making the change
+AutoOps-Insight can show a field-level diff between the current and simulated rule, a rollback preview for an audit event, and the expected impact of reverting a previous rule update before making the change. These workflows make rule changes safer for operator-managed classification systems by showing likely impact before applying or reverting a policy update.
 
 ### Dashboard
 
@@ -270,13 +267,7 @@ python cli.py rollback-preview 1
 python cli.py report
 ```
 
-### Operator Workflow Steps
-
-Typical admin workflow:
-1. Update rule
-2. Inspect diff
-3. Preview impacted incidents
-4. Apply or rollback
+**Operator Workflow Steps** — typical admin flow: update rule → inspect diff → preview impacted incidents → apply or rollback.
 
 ---
 
@@ -368,7 +359,7 @@ Typical admin workflow:
 
 ## Sample Markdown Report
 
-```markdown
+````md
 # AutoOps Insight Report
 
 ## Release Risk Summary
@@ -382,13 +373,13 @@ Typical admin workflow:
 ## Operational Recommendation
 - Repeated failure signatures are present at levels that may indicate regression or release instability.
 - Investigate recurring signatures before promoting the current build or environment.
-```
+````
 
 ---
 
 ## Project Structure
 
-```
+```text
 AutoOps-Insight/
 ├── main.py                     # FastAPI application and API routes
 ├── cli.py                      # Headless CLI for analysis and reporting
@@ -485,13 +476,9 @@ A sample operator workflow is included in `docs/runbook.md`, covering:
 
 ## Screenshots
 
-**Audit Log Traceability**
+**Audit Log Traceability** — rule update with actor, timestamp, and before/after diff.
 
-`python cli.py audit` — a `rule_update` event for `timeout_rule`, triggered by actor `kriti`, showing the full before/after diff: `probable_owner` changed from `service-owner` to `platform-networking`, with timestamp and complete rule state recorded.
-
-**Incident Replay and Test Validation**
-
-`python cli.py replay 1` — replays a stored timeout incident (signature: `timeout:733da8a4e20740af`, severity high, confidence 0.95, `release_blocking: true`) with full recurrence metadata showing repeated occurrences. The screenshot also shows a passing automated test run.
+**Incident Replay and Test Validation** — replayed stored incident with recurrence metadata and passing test run.
 
 ---
 
