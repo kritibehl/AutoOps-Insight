@@ -497,6 +497,12 @@ Replayed stored incident with recurrence metadata and passing test run.
 
 ![AutoOps incident replay](docs/screenshots/autoops-incident-replay.png)
 
+### Audit Diff and Rollback Preview UI
+Shows audit-backed rule review in the dashboard, including selected audit event context and field-level diff inspection for a rule update.
+
+![AutoOps audit diff and rollback preview UI](docs/screenshots/autoops-audit-diff-rollback-ui.png)
+
+
 ---
 
 ## Engineering Decisions
