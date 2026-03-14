@@ -16,9 +16,17 @@ AutoOps-Insight transforms raw failure logs into structured, actionable reliabil
 
 ---
 
+## Operator Workflow
+
+```text
+ingest logs → classify incident → simulate rule change → preview impact → rollback if needed
+```
+
+---
+
 ## Architecture
 
-```
+```text
 Log Sources
    │
    ▼
@@ -37,6 +45,7 @@ SQLite Incident Store
    ├── Recurrence / Replay
    ├── Release-Risk Reports
    ├── Audit Log
+   ├── Rule Simulation / Impact Preview
    └── Dashboard / API / CLI
 ```
 
@@ -70,12 +79,15 @@ Each incident gets a stable, normalized signature like `timeout:733da8a4e20740af
 
 ### Historical Recurrence Tracking
 
-Results persist in SQLite. The system tracks total occurrence count per signature, first and last seen timestamps, recurring signature qualification, and recent failure-family distribution statistics.
+Results persist in SQLite. The system tracks:
+- Total occurrence count per signature
+- First and last seen timestamps
+- Recurring signature qualification
+- Recent failure-family distribution statistics
 
 ### Release-Risk Reporting
 
 The report engine aggregates stored history into a release-risk summary (`low` / `medium` / `high` / `critical`) based on:
-
 - Presence of release-blocking incidents
 - Recurring signature concentration
 - Anomaly flags (e.g. one signature accounting for 80% of recent failures)
@@ -84,15 +96,35 @@ The report engine aggregates stored history into a release-risk summary (`low` /
 ### Anomaly Detection
 
 Heuristic-based flags that surface meaningful signals without overfitting:
-
 - Signature concentration spikes
 - High-count recurring failures
 - Family-level spikes
 - Release blocker saturation
 
+### Rule Simulation and Impact Preview
+
+Admins can dry-run rule changes against stored incidents before applying them.
+
+Simulation preview answers:
+- How many incidents would be evaluated
+- How many incidents would be impacted
+- Whether `failure_family`, `severity`, `release_blocking`, or `probable_owner` would change
+- Which stored incidents would be affected
+
+### Rule Diff and Rollback Preview
+
+AutoOps-Insight can show:
+- A field-level diff between the current and simulated rule
+- A rollback preview for an audit event
+- The expected impact of reverting a previous rule update before making the change
+
 ### Dashboard
 
 A React/Vite frontend (`autoops-ui/`) showing release risk score, blocker count, recurring signatures, anomaly panel, recent analyses, failure-family distribution, and a markdown report preview. Log upload triggers a full incident breakdown inline.
+
+---
+
+## Detection Logic
 
 The classifier uses two layers:
 
@@ -101,7 +133,9 @@ The classifier uses two layers:
 
 **ML fallback** uses TF-IDF vectorization and Logistic Regression trained on labeled log data (`ml_model/log_train.csv`). Each analysis record indicates which detection path was used.
 
-### Failure Taxonomy
+---
+
+## Failure Taxonomy
 
 | Family | Severity | Release Blocking |
 |---|---|---|
@@ -148,6 +182,9 @@ python cli.py analyze sample.log
 python cli.py analyze sample.log --no-print-json
 python cli.py replay 1
 python cli.py audit
+python cli.py simulate-rule timeout_rule probable_owner platform-networking
+python cli.py rule-diff timeout_rule probable_owner platform-networking
+python cli.py rollback-preview 1
 python cli.py report
 ```
 
@@ -155,31 +192,38 @@ python cli.py report
 
 ## Getting Started
 
-**1. Install dependencies**
+### 1. Install dependencies
+
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-**2. Train or retrain the model**
+### 2. Train or retrain the model
+
 ```bash
 cd ml_model
 python train_model.py
 cd ..
 ```
 
-**3. Start the API server**
+### 3. Start the API server
+
 ```bash
 uvicorn main:app --reload
 ```
 
-**4. Run the CLI**
+### 4. Run the CLI
+
 ```bash
 python cli.py analyze sample.log
 python cli.py replay 1
+python cli.py simulate-rule timeout_rule probable_owner platform-networking
+python cli.py rollback-preview 1
 python cli.py report
 ```
 
-**5. Start the dashboard**
+### 5. Start the dashboard
+
 ```bash
 cd autoops-ui
 npm install
@@ -191,7 +235,6 @@ npm run dev
 ## CI Integration
 
 A GitHub Actions workflow automatically:
-
 - Runs a CLI health check
 - Analyzes sample logs
 - Generates markdown and JSON report artifacts
@@ -208,14 +251,137 @@ python cli.py analyze sample.log
 # Replay a stored incident by ID
 python cli.py replay 1
 
+# Simulate a rule change before applying it
+python cli.py simulate-rule timeout_rule probable_owner platform-networking
+
+# Show only the rule diff
+python cli.py rule-diff timeout_rule probable_owner platform-networking
+
 # Update a detection rule
 python cli.py update-rule-cmd timeout_rule probable_owner platform-networking --actor kriti
 
 # Inspect the audit trail
 python cli.py audit
 
+# Preview rollback impact for an audit event
+python cli.py rollback-preview 1
+
 # Generate a release-risk report
 python cli.py report
+```
+
+### Operator Workflow Steps
+
+Typical admin workflow:
+1. Update rule
+2. Inspect diff
+3. Preview impacted incidents
+4. Apply or rollback
+
+---
+
+## Sample JSON Incident
+
+```json
+{
+  "predicted_issue": "timeout",
+  "confidence": 0.95,
+  "failure_family": "timeout",
+  "severity": "high",
+  "signature": "timeout:733da8a4e20740af",
+  "summary": "Detected failure family: timeout. Key evidence: line 1: ERROR: Jenkins pipeline failed at stage Deploy. Timeout connecting to registry.",
+  "likely_cause": "operation exceeded timeout threshold or a dependency responded too slowly",
+  "first_remediation_step": "inspect the exact timed-out operation and compare recent latency trends",
+  "next_debugging_action": "check downstream service latency, retries, and resource saturation",
+  "probable_owner": "platform-networking",
+  "release_blocking": true,
+  "evidence": [
+    {
+      "line_number": 1,
+      "text": "ERROR: Jenkins pipeline failed at stage Deploy. Timeout connecting to registry."
+    }
+  ],
+  "recurrence": {
+    "total_count": 3,
+    "first_seen": "2026-03-12T16:18:31.621813+00:00",
+    "last_seen": "2026-03-12T16:22:41.139282+00:00",
+    "is_recurring": true
+  }
+}
+```
+
+---
+
+## Sample Rule Simulation / Impact Preview
+
+```json
+{
+  "rule_id": "timeout_rule",
+  "incidents_evaluated": 3,
+  "incidents_impacted": 3,
+  "reclassified_incidents": 0,
+  "severity_changed": 0,
+  "release_blocking_changed": 0,
+  "probable_owner_changed": 3,
+  "sample_impacted_incidents": [
+    {
+      "id": 3,
+      "signature": "timeout:733da8a4e20740af",
+      "changed_fields": ["probable_owner"],
+      "original": {
+        "failure_family": "timeout",
+        "severity": "high",
+        "release_blocking": true,
+        "probable_owner": "service-owner"
+      },
+      "simulated": {
+        "failure_family": "timeout",
+        "severity": "high",
+        "release_blocking": true,
+        "probable_owner": "platform-networking"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Sample Rollback Preview
+
+```json
+{
+  "audit_event_id": 1,
+  "rule_id": "timeout_rule",
+  "rollback_updates": {
+    "probable_owner": "service-owner"
+  },
+  "impact_preview": {
+    "incidents_evaluated": 3,
+    "incidents_impacted": 3,
+    "probable_owner_changed": 3
+  }
+}
+```
+
+---
+
+## Sample Markdown Report
+
+```markdown
+# AutoOps Insight Report
+
+## Release Risk Summary
+- Release risk: **high**
+- Total analyses: **3**
+- Release-blocking incidents: **3**
+
+## Top Recurring Signatures
+- `timeout:733da8a4e20740af` | family=timeout | severity=high | count=3
+
+## Operational Recommendation
+- Repeated failure signatures are present at levels that may indicate regression or release instability.
+- Investigate recurring signatures before promoting the current build or environment.
 ```
 
 ---
@@ -233,7 +399,8 @@ AutoOps-Insight/
 │   ├── config_loader.py        # YAML rule loader
 │   ├── rule_admin.py           # Rule update helper + audit integration
 │   ├── rules.py                # Deterministic failure-family detection
-│   └── taxonomy.py             # Severity, ownership, remediation metadata
+│   ├── taxonomy.py             # Severity, ownership, remediation metadata
+│   └── simulation.py           # Rule simulation, diff, and preview logic
 ├── analysis/
 │   ├── formatter.py            # Incident summary formatting
 │   ├── signatures.py           # Signature normalization and fingerprinting
@@ -266,20 +433,19 @@ AutoOps-Insight/
 python -m pytest -q
 ```
 
-Current suite: 14 passing tests, covering:
-
+Current suite: **16 passing tests**, covering:
 - Deterministic rule detection
 - Signature stability and normalization
 - Trend and anomaly heuristics
 - Markdown report rendering
 - API integration for `/analyze`, `/history/recent`, `/history/recurring`, and `/reports/summary`
+- Rule simulation and field-level diff behavior
 
 ---
 
 ## Observability
 
 Prometheus counters exposed at `/metrics`:
-
 - `logs_processed_total`
 - `predict_requests_total`
 - `analyze_requests_total`
@@ -298,17 +464,16 @@ Detection rules live in `config/rules.yaml`. Failure-family patterns, severity, 
 
 | Mode | Description |
 |---|---|
-| **API** | Upload logs and query history/report endpoints via FastAPI |
-| **CLI** | Analyze logs and generate reports headlessly for CI or local use |
-| **Dashboard** | Inspect release risk, recurring signatures, anomalies, and reports in the React UI |
-| **CI** | Run sample analyses and upload report artifacts via GitHub Actions |
+| API | Upload logs and query history/report endpoints via FastAPI |
+| CLI | Analyze logs, replay incidents, simulate rule changes, and generate reports headlessly |
+| Dashboard | Inspect release risk, recurring signatures, anomalies, and reports in the React UI |
+| CI | Run sample analyses and upload report artifacts via GitHub Actions |
 
 ---
 
 ## Runbook
 
-A sample operator workflow is included in [`docs/runbook.md`](docs/runbook.md), covering:
-
+A sample operator workflow is included in `docs/runbook.md`, covering:
 - Latest log analysis
 - Recurrence inspection
 - Incident replay
@@ -320,27 +485,23 @@ A sample operator workflow is included in [`docs/runbook.md`](docs/runbook.md), 
 
 ## Screenshots
 
-### Audit Log Traceability
+**Audit Log Traceability**
 
 `python cli.py audit` — a `rule_update` event for `timeout_rule`, triggered by actor `kriti`, showing the full before/after diff: `probable_owner` changed from `service-owner` to `platform-networking`, with timestamp and complete rule state recorded.
 
-![AutoOps audit log](docs/screenshots/autoops-audit-log.png)
+**Incident Replay and Test Validation**
 
-### Incident Replay and Test Validation
-
-`python cli.py replay 1` — replays a stored timeout incident (`signature: timeout:733da8a4e20740af`, severity `high`, confidence `0.95`, `release_blocking: true`) with full recurrence metadata showing 3 occurrences across a 4-minute window (`is_recurring: true`). Above it: 14 passing tests at 100% in 2.45s.
-
-![AutoOps incident replay](docs/screenshots/autoops-incident-replay.png)
+`python cli.py replay 1` — replays a stored timeout incident (signature: `timeout:733da8a4e20740af`, severity high, confidence 0.95, `release_blocking: true`) with full recurrence metadata showing repeated occurrences. The screenshot also shows a passing automated test run.
 
 ---
 
 ## Engineering Decisions
 
-- **YAML rules instead of hardcoded-only logic** so detection patterns, severity, ownership hints, and remediation guidance can be updated without backend code changes.
+- **YAML rules** instead of hardcoded-only logic so detection patterns, severity, ownership hints, and remediation guidance can be updated without backend code changes.
 - **Stable signature fingerprinting** to identify recurring incidents across noisy repeated logs and make recurrence tracking deterministic.
-- **SQLite persistence** to keep replay, recurrence tracking, and reporting simple, inspectable, and easy to run locally.
-- **Heuristic anomaly detection instead of overfit ML** to preserve explainability for operational triage and release-risk review.
-- **API + CLI + dashboard + CI support** so the same system can support debugging, automation, visual inspection, and artifact generation.
+- **SQLite persistence** to keep replay, recurrence tracking, reporting, and preview workflows simple, inspectable, and easy to run locally.
+- **Heuristic anomaly detection** instead of overfit ML to preserve explainability for operational triage and release-risk review.
+- **API + CLI + dashboard + CI support** so the same system can support debugging, automation, visual inspection, artifact generation, and admin preview workflows.
 
 ---
 
