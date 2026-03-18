@@ -2,6 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
+from analytics_reporting import rebuild_reporting_tables, fetch_table
+from analytics_quality import validate_data_quality
+from analytics_stats import compare_recent_windows
+from analytics_exports import export_powerbi_bundle
 from fastapi.responses import PlainTextResponse
 from prometheus_client import Counter, generate_latest
 
@@ -222,3 +226,49 @@ def metrics():
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}
+
+
+
+@app.post("/reporting/rebuild")
+def reporting_rebuild():
+    return rebuild_reporting_tables()
+
+
+@app.get("/reporting/daily")
+def reporting_daily(limit: int = 100):
+    return {"items": fetch_table("reporting_daily_summary", limit=limit)}
+
+
+@app.get("/reporting/weekly")
+def reporting_weekly(limit: int = 100):
+    return {"items": fetch_table("reporting_weekly_summary", limit=limit)}
+
+
+@app.get("/reporting/pipeline-trends")
+def reporting_pipeline_trends(limit: int = 100):
+    return {"items": fetch_table("reporting_pipeline_trends", limit=limit)}
+
+
+@app.get("/reporting/root-causes")
+def reporting_root_causes(limit: int = 100):
+    return {"items": fetch_table("reporting_root_cause_counts", limit=limit)}
+
+
+@app.get("/reporting/deployment-regressions")
+def reporting_deployment_regressions(limit: int = 100):
+    return {"items": fetch_table("reporting_deployment_regressions", limit=limit)}
+
+
+@app.get("/reporting/data-quality")
+def reporting_data_quality():
+    return validate_data_quality()
+
+
+@app.get("/reporting/compare")
+def reporting_compare(before_limit: int = 10, after_limit: int = 10):
+    return compare_recent_windows(before_limit=before_limit, after_limit=after_limit)
+
+
+@app.post("/reporting/export-powerbi")
+def reporting_export_powerbi():
+    return export_powerbi_bundle()

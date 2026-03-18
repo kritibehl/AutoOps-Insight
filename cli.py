@@ -3,6 +3,12 @@ from pathlib import Path
 
 import typer
 
+from analytics_reporting import rebuild_reporting_tables
+from analytics_quality import validate_data_quality
+from analytics_stats import compare_recent_windows
+from analytics_exports import export_powerbi_bundle
+
+
 from classifiers.rule_admin import update_rule
 from classifiers.simulation import simulate_rule_update, build_rule_diff
 from ml_predictor import analyze_log_text
@@ -199,5 +205,33 @@ def health():
     typer.echo("AutoOps Insight CLI is ready.")
 
 
+
+
+@app.command("rebuild-reporting")
+def rebuild_reporting() -> None:
+    result = rebuild_reporting_tables()
+    print(result)
+
+
+@app.command("validate-data")
+def validate_data() -> None:
+    result = validate_data_quality()
+    print(result)
+
+
+@app.command("compare-windows")
+def compare_windows(before_limit: int = 10, after_limit: int = 10) -> None:
+    result = compare_recent_windows(before_limit=before_limit, after_limit=after_limit)
+    print(result)
+
+
+@app.command("export-powerbi")
+def export_powerbi() -> None:
+    result = export_powerbi_bundle()
+    print(result)
+
 if __name__ == "__main__":
     app()
+
+
+

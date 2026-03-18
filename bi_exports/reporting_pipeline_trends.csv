@@ -1,0 +1,2 @@
+id,pipeline_name,day,total_events,failure_events,avg_confidence,created_at
+3,sample.log,2026-03-12,3,3,0.9499999999999998,2026-03-18T18:16:36.037362+00:00
