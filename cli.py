@@ -7,6 +7,9 @@ from analytics_reporting import rebuild_reporting_tables
 from analytics_quality import validate_data_quality
 from analytics_stats import compare_recent_windows
 from analytics_exports import export_powerbi_bundle
+from analysis.runbooks import get_runbook
+from analysis.correlation import correlate_incident
+from analysis.fleet_health import fleet_summary
 
 
 from classifiers.rule_admin import update_rule
@@ -229,6 +232,26 @@ def compare_windows(before_limit: int = 10, after_limit: int = 10) -> None:
 def export_powerbi() -> None:
     result = export_powerbi_bundle()
     print(result)
+
+
+
+
+
+@app.command("incident-runbook")
+def incident_runbook(failure_family: str) -> None:
+    print(get_runbook(failure_family))
+
+
+@app.command("incident-correlate")
+def incident_correlate(incident_id: int = 0, signature: str = "", window_minutes: int = 30) -> None:
+    incident_id_arg = incident_id if incident_id > 0 else None
+    signature_arg = signature or None
+    print(correlate_incident(incident_id=incident_id_arg, signature=signature_arg, window_minutes=window_minutes))
+
+
+@app.command("fleet-health")
+def fleet_health_cmd() -> None:
+    print(fleet_summary())
 
 if __name__ == "__main__":
     app()

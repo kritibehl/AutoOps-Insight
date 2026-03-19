@@ -1,0 +1,2 @@
+ERROR upstream timeout after latency spike on recommendation service
+WARN deadline exceeded due to slow dependency responses

@@ -1,0 +1,2 @@
+ERROR dns lookup failed for payments.internal: no such host
+WARN retrying request to payments.internal after resolver error

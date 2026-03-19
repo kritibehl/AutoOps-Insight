@@ -1,0 +1,2 @@
+ERROR outbound request failed: tls handshake timeout while connecting to api.partner.example:443
+WARN x509 certificate verify failed during dependency call

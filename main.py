@@ -6,6 +6,10 @@ from analytics_reporting import rebuild_reporting_tables, fetch_table
 from analytics_quality import validate_data_quality
 from analytics_stats import compare_recent_windows
 from analytics_exports import export_powerbi_bundle
+from analysis.network_signatures import infer_network_family
+from analysis.runbooks import get_runbook
+from analysis.correlation import correlate_incident
+from analysis.fleet_health import fleet_summary
 from fastapi.responses import PlainTextResponse
 from prometheus_client import Counter, generate_latest
 
@@ -33,6 +37,12 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="AutoOps Insight", lifespan=lifespan)
+
+
+def _prefer_network_family(log_text: str, predicted_family: str) -> str:
+    inferred = infer_network_family(log_text)
+    return inferred or predicted_family
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -272,3 +282,19 @@ def reporting_compare(before_limit: int = 10, after_limit: int = 10):
 @app.post("/reporting/export-powerbi")
 def reporting_export_powerbi():
     return export_powerbi_bundle()
+
+
+
+@app.get("/incident/runbook/{failure_family}")
+def incident_runbook(failure_family: str):
+    return get_runbook(failure_family)
+
+
+@app.get("/incident/correlate")
+def incident_correlate(incident_id: int | None = None, signature: str | None = None, window_minutes: int = 30):
+    return correlate_incident(incident_id=incident_id, signature=signature, window_minutes=window_minutes)
+
+
+@app.get("/fleet/health")
+def fleet_health_view():
+    return fleet_summary()
