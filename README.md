@@ -1,5 +1,8 @@
 # AutoOps-Insight
 
+
+> AutoOps-Insight is an operator-facing incident triage and reporting tool that combines rule-based + ML-assisted classification, timeline correlation, runbook generation, fleet-health views, and BI-style reporting to accelerate root-cause isolation across repeated regressions.
+
 > A reliability analytics tool for CI and infrastructure failures — classifies logs, fingerprints recurring incident signatures, tracks recurrence, previews rule-change impact, and generates release-risk summaries.
 
 ---
@@ -530,3 +533,160 @@ Shows audit-backed rule review in the dashboard, including selected audit event 
 ## Roles This Maps To
 
 SRE · Production Engineering · Release Engineering · Internal Tooling · Platform / Infrastructure
+---
+
+## Operator Workflow and Incident Case Studies
+
+AutoOps-Insight is designed to support operator-facing incident triage, not just passive reporting. In addition to rule-based + ML-assisted classification, the system correlates nearby changes, repeated incident signatures, release-blocking signals, and probable ownership to help responders move from detection to action faster.
+
+### Before vs After Operator Triage Flow
+
+**Before**
+1. Notice repeated failures in logs or CI output
+2. Manually inspect stack traces and error strings
+3. Search dashboards for nearby latency or timeout spikes
+4. Check whether a deploy or rule/config change happened nearby
+5. Guess likely owner and escalation path
+6. Manually draft mitigation or rollback decision
+
+**After**
+1. Classify the incident into a concrete failure family
+2. Correlate nearby incidents and change events in a bounded timeline window
+3. Surface likely owner, blast-radius hints, and repeated-signature patterns
+4. Generate operator runbook guidance:
+   - first checks
+   - likely cause
+   - rollback / no-rollback guidance
+   - escalation route
+   - mitigation sequence
+5. Use fleet-level views to spot recurrence and noisy services
+
+This reduces triage ambiguity and makes repeated incidents easier to classify, escalate, and mitigate consistently.
+
+---
+
+## Incident Case Study 1 — DNS / Connectivity Failure
+
+**Incident family:** `dns`
+
+**Observed signal**
+- Resolver-related failures surfaced in log analysis
+- Repeated host lookup failures clustered around the same affected dependency
+- Operator workflow suggested DNS-focused checks rather than generic timeout investigation
+
+**Correlated nearby change**
+- No deploy rollback should be assumed automatically
+- The correct first move is to verify whether a recent service discovery or DNS-related change occurred near the incident window
+
+**Suggested rollback**
+- Roll back only when correlation is strong with a recent config or service-discovery change
+- Otherwise treat as a platform/network or name-resolution incident first
+
+**Escalation route**
+- `service-owner -> platform-networking -> dns/platform team`
+
+**Mitigation sequence**
+1. Retry resolution from multiple hosts or regions
+2. Compare whether one hostname / zone is disproportionately affected
+3. Shift to a known-good endpoint if one exists
+4. Roll back recent DNS/service-discovery change if correlation is strong
+5. Escalate with affected hostnames, regions, and timestamps
+
+**Why it matters**
+This shows the system can distinguish DNS-style failures from generic application-level regressions and give an operator a targeted next action path.
+
+---
+
+## Incident Case Study 2 — Release-Blocking Regression Near a Change Window
+
+**Incident family:** `timeout`
+
+**Observed signal**
+- Multiple release-blocking incidents appeared within the same correlation window
+- The correlation engine detected:
+  - nearby change activity
+  - multi-event burst behavior
+  - single-family clustering
+  - release-blocking incident concentration
+
+**Example correlated nearby change**
+- Audit history captured a nearby `rule_update` event in the incident window
+- The system flagged that a rollback-oriented review could be useful because the incident burst aligned closely with a recent change
+
+**Suggested rollback**
+- Rollback guidance is treated as conditional, not automatic
+- When nearby change timing and incident clustering align strongly, rollback becomes a recommended operator path to evaluate quickly
+
+**Escalation route**
+- `service-owner -> platform-networking` or the owner tied to the correlated change
+
+**Mitigation sequence**
+1. Identify the exact operation timing out
+2. Compare timing, retries, and dependency latency before/after the nearby change
+3. Check whether the incident is isolated or part of a broader burst
+4. Evaluate rollback if the change window correlation is strong
+5. Escalate with timestamps, affected services, and blocking scope
+
+**Why it matters**
+This makes the project feel like a production support system: it does not just label an error, it ties incident behavior to nearby operational changes and helps responders decide whether rollback is worth pursuing.
+
+---
+
+## Incident Case Study 3 — Noisy-Service Recurrence and Fleet Health
+
+**Observed signal**
+Fleet health views surfaced:
+- recurring incident sources
+- noisy-service ranking
+- highest blast-radius regressions
+- recurrence by subsystem
+- MTTR-style recurrence windows
+
+**Example fleet view**
+In one dataset, the platform-networking owner surfaced as the highest-noise service grouping, while timeout-related signatures appeared repeatedly across the same source and subsystem patterns.
+
+**Operator value**
+This helps answer:
+- Which service or subsystem is the noisiest?
+- Which repeated signatures deserve deeper ownership attention?
+- Which incidents are localized vs broad in blast radius?
+- Which services repeatedly generate release-blocking conditions?
+
+**Suggested action path**
+1. Rank recurring sources by incident volume
+2. Group repeated signatures by owner + failure family
+3. Investigate services with repeated release-blocking impact
+4. Use recurrence windows to prioritize long-running or reappearing issues
+5. Route systemic issues to platform owners instead of treating them as isolated one-offs
+
+**Why it matters**
+This shifts the project from one-off incident labeling into recurring operational intelligence and incident pattern management.
+
+---
+
+## Example Operator Output Structure
+
+A single incident workflow can now surface:
+
+- **incident family:** `timeout`, `dns`, `tls_handshake`, `service_unreachable`, etc.
+- **correlated nearby change:** deploy, rollout, rule update, or other audit-window activity
+- **suggested rollback:** conditional guidance based on timing correlation and incident clustering
+- **escalation route:** service-owner, platform-networking, platform-security, or owning dependency team
+- **mitigation sequence:** ordered steps for immediate triage and containment
+
+This makes AutoOps-Insight useful as an incident support tool, not just an analytics dashboard.
+
+
+## Why This Matters for Production Engineering
+
+This project is aimed at the operational gap between raw error logs and real responder action.
+
+It helps operators answer:
+- What kind of incident is this?
+- Did it correlate with a nearby deploy or change?
+- Is rollback likely helpful?
+- Who should own escalation?
+- What mitigation steps should happen first?
+- Is this a recurring noisy-service problem or a one-off issue?
+
+That framing makes the system more relevant for Production Engineering and operational backend roles than a generic reporting dashboard.
