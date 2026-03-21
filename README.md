@@ -2,7 +2,7 @@
 
 **Operator-facing incident triage and reporting for repeated CI, service, and infrastructure regressions.**
 
-[![Tests](https://github.com/kritibehl/AutoOps-Insight/actions/workflows/test.yml/badge.svg)](https://github.com/kritibehl/AutoOps-Insight/actions)
+[![Tests](https://github.com/kritibehl/AutoOps-Insight/actions/workflows/main.yml/badge.svg)](https://github.com/kritibehl/AutoOps-Insight/actions)
 ![GitHub Repo stars](https://img.shields.io/github/stars/kritibehl/AutoOps-Insight?style=social)
 
 AutoOps-Insight transforms raw failure logs into structured, actionable reliability intelligence. Rather than labeling a log as simply "timeout," it produces a structured incident artifact with severity, likely cause, remediation steps, ownership, a stable fingerprint — and a release-risk recommendation.
