@@ -82,14 +82,6 @@ Each log upload produces a structured incident record:
 | `evidence` | Supporting log lines |
 | `recurrence` | How many times this signature has appeared |
 
-### Signature Fingerprinting
-
-Each incident gets a stable, normalized signature like `timeout:733da8a4e20740af`. This enables cross-run recurrence tracking — the system knows when two failures are the same underlying issue despite volatile log content.
-
-### Historical Recurrence Tracking
-
-Results persist in SQLite. The system tracks total occurrence count per signature, first and last seen timestamps, recurring signature qualification, and recent failure-family distribution statistics.
-
 ### Timeline Correlation Engine
 
 Correlates incident windows with nearby operational context: deploy or rollout timing, change/config activity, bursts of repeated failures, release-blocking concentration, owner spread, and repeated failure-family clustering.
@@ -105,6 +97,14 @@ Fleet-level views surface: top recurring incident sources, noisy-service ranking
 ### Release-Risk Reporting
 
 The report engine aggregates stored history into a release-risk summary (`low` / `medium` / `high` / `critical`) based on: presence of release-blocking incidents, recurring signature concentration, anomaly flags (e.g. one signature accounting for 80% of recent failures), and window comparison vs. baseline blocker rate.
+
+### Signature Fingerprinting
+
+Each incident gets a stable, normalized signature like `timeout:733da8a4e20740af`. This enables cross-run recurrence tracking — the system knows when two failures are the same underlying issue despite volatile log content.
+
+### Historical Recurrence Tracking
+
+Results persist in SQLite. The system tracks total occurrence count per signature, first and last seen timestamps, recurring signature qualification, and recent failure-family distribution statistics.
 
 ### Anomaly Detection
 
@@ -141,7 +141,7 @@ Reporting tables include `reporting_daily_summary`, `reporting_weekly_summary`, 
 
 ### Dashboard
 
-A React/Vite frontend (`autoops-ui/`) showing release risk score, blocker count, recurring signatures, anomaly panel, recent analyses, failure-family distribution, and a markdown report preview. Log upload triggers a full incident breakdown inline.
+A React/Vite frontend (`autoops-ui/`) surfacing release risk, recurring signatures, anomaly context, recent incidents, and report previews for operator review. Log upload triggers a full incident breakdown inline.
 
 ---
 
@@ -518,7 +518,7 @@ python3 cli.py rollback-preview <audit_event_id>
 
 ```json
 {
-  "failure_family": "dns",
+  "failure_family": "dns_failure",
   "first_checks": [
     "verify DNS resolver reachability from affected hosts",
     "check whether one hostname or zone is disproportionately impacted",
@@ -752,11 +752,8 @@ Current test suite covers: deterministic rule detection, signature stability and
 
 - Multi-source ingestion from system logs, containers, or metrics agents
 - Time-series anomaly detection with robust statistical baselines
-- Deep root-cause inference
-- Multi-tenant incident correlation
-- Production-scale storage or querying
 - Real release gating inside a deployment pipeline
-- Learned summarization or recommendation models
+- Production-scale storage or multi-tenant incident correlation
 
 ---
 
