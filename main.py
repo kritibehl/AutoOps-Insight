@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from incident_ops.api import router as incident_ops_router
 from analytics_reporting import rebuild_reporting_tables, fetch_table
 from analytics_quality import validate_data_quality
 from analytics_stats import compare_recent_windows
@@ -37,6 +39,15 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="AutoOps Insight", lifespan=lifespan)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173", "*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _prefer_network_family(log_text: str, predicted_family: str) -> str:
@@ -298,3 +309,6 @@ def incident_correlate(incident_id: int | None = None, signature: str | None = N
 @app.get("/fleet/health")
 def fleet_health_view():
     return fleet_summary()
+
+
+app.include_router(incident_ops_router)

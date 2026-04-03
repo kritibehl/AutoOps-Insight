@@ -8,3 +8,4 @@ deploy.zip
 autoops-ui/node_modules/
 autoops-ui/dist/
 reports/generated/
+autoops-ui/.env

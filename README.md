@@ -106,11 +106,50 @@ Each incident gets a stable, normalized signature like `timeout:733da8a4e20740af
 
 Results persist in SQLite. The system tracks total occurrence count per signature, first and last seen timestamps, recurring signature qualification, and recent failure-family distribution statistics.
 
+=======
+
+### Release-Risk Reporting
+
+The report engine aggregates stored history into a release-risk summary (`low` / `medium` / `high` / `critical`) based on: presence of release-blocking incidents, recurring signature concentration, anomaly flags (e.g. one signature accounting for 80% of recent failures), and window comparison vs. baseline blocker rate.
+
+
 ### Anomaly Detection
 
 Heuristic-based flags that surface meaningful signals without overfitting: signature concentration spikes, high-count recurring failures, family-level spikes, and release blocker saturation.
 
+
 ### Network / Infra-Aware Incident Taxonomy
+
+The system supports incident families grounded in production symptoms rather than generic log labeling:
+
+| Family | Severity | Release Blocking |
+|---|---|---|
+| `timeout` | high | yes |
+| `oom` | critical | yes |
+| `connection_refused` | high | yes |
+| `dns_failure` | high | yes |
+| `tls_handshake` | high | yes |
+| `flaky_test_signature` | medium | context-dependent |
+| `retry_exhausted` | medium | yes |
+| `crash_loop` | critical | yes |
+| `dependency_unavailable` | high | yes |
+| `intermittent_network_flap` | medium | context-dependent |
+
+### Timeline Correlation Engine
+
+Correlates incident windows with nearby operational context: deploy or rollout timing, change/config activity, bursts of repeated failures, release-blocking concentration, owner spread, and repeated failure-family clustering.
+
+### Operator Runbook Generation
+
+For each incident family, the tool suggests: first checks, likely cause, rollback/no-rollback guidance, escalation route, and mitigation sequence.
+
+### Fleet Health and Recurrence Visibility
+
+Fleet-level views surface: top recurring incident sources, noisy-service ranking, highest blast-radius regressions, incident recurrence by subsystem, and MTTR-style recurrence windows.
+(Add incident inbox, multi-source ingestion, runbooks, and fleet health workflows)
+
+### Network / Infra-Aware Incident Taxonomy
+
 
 The system supports incident families grounded in production symptoms rather than generic log labeling:
 
@@ -330,6 +369,235 @@ python3 cli.py rollback-preview <audit_event_id>
 ## API Endpoints
 
 ### Core
+=======
+Admins can dry-run rule changes against stored incidents before applying them. Simulation preview answers: how many incidents would be evaluated, how many would be impacted, whether `failure_family`, `severity`, `release_blocking`, or `probable_owner` would change, and which stored incidents would be affected.
+
+### Rule Diff and Rollback Preview
+
+AutoOps-Insight shows a field-level diff between the current and simulated rule, a rollback preview for an audit event, and the expected impact of reverting a previous rule update before making the change. These workflows make rule changes safer for operator-managed classification systems.
+
+### SQL-Backed Reporting and BI Export
+
+Reporting tables include `reporting_daily_summary`, `reporting_weekly_summary`, `reporting_pipeline_trends`, `reporting_root_cause_counts`, and `reporting_deployment_regressions`. Power BI-ready CSV exports are generated under `bi_exports/`.
+
+### Dashboard
+
+A React/Vite frontend (`autoops-ui/`) showing release risk score, blocker count, recurring signatures, anomaly panel, recent analyses, failure-family distribution, and a markdown report preview. Log upload triggers a full incident breakdown inline.
+
+---
+
+## Detection Logic
+
+The classifier uses two layers:
+
+**Rule-based detection** checks for deterministic patterns: `timeout` · `dns_failure` · `connection_refused` · `tls_failure` · `retry_exhausted` · `oom` · `flaky_test_signature` · `dependency_unavailable` · `crash_loop` · `latency_spike`
+
+**ML fallback** uses TF-IDF vectorization and Logistic Regression trained on labeled log data (`ml_model/log_train.csv`). Each analysis record indicates which detection path was used.
+
+---
+
+## Before vs After Triage
+
+**Before**
+1. Read raw logs and alerts manually
+2. Guess likely owner from error strings
+3. Check dashboards separately for timing and regressions
+4. Search for nearby deploys or config changes by hand
+5. Decide rollback and escalation with incomplete context
+
+**After**
+1. Classify the incident into a concrete failure family
+2. Correlate nearby incidents and change events in a bounded timeline window
+3. Surface likely owner, blast-radius hints, and repeated-signature patterns
+4. Generate operator runbook guidance (first checks, likely cause, rollback guidance, escalation, mitigation)
+5. Use fleet-level views to spot recurrence and noisy services
+
+---
+
+## Screenshots
+
+### Audit Log Traceability
+Rule update with actor, timestamp, and before/after diff.
+>>>>>>> 4aff16f (Add incident inbox, multi-source ingestion, runbooks, and fleet health workflows)
+
+![AutoOps audit log](docs/screenshots/autoops-audit-log.png)
+
+### Incident Replay and Test Validation
+Replayed stored incident with recurrence metadata and passing test run.
+
+![AutoOps incident replay](docs/screenshots/autoops-incident-replay.png)
+
+### Audit Diff and Rollback Preview UI
+Audit-backed rule review in the dashboard, including selected audit event context and field-level diff inspection for a rule update.
+
+![AutoOps audit diff and rollback preview UI](docs/screenshots/autoops-audit-diff-rollback-ui.png)
+
+### Fleet Health and Root-Cause Report
+Fleet-level recurrence view showing noisy-service ranking, top recurring signatures, and root-cause distribution summary.
+
+![AutoOps fleet health and root-cause report](docs/screenshots/autoops-fleet-health-root-cause.png)
+
+### Reporting
+
+<<<<<<< HEAD
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/reporting/rebuild` | Rebuild all reporting tables |
+| `GET` | `/reporting/daily` | Daily failure summary |
+| `GET` | `/reporting/weekly` | Weekly failure summary |
+| `GET` | `/reporting/pipeline-trends` | Trend by pipeline/source |
+| `GET` | `/reporting/root-causes` | Root-cause counts |
+| `GET` | `/reporting/deployment-regressions` | Deployment regression summary |
+| `GET` | `/reporting/data-quality` | Data quality validation report |
+| `GET` | `/reporting/compare` | Before/after window comparison |
+| `POST` | `/reporting/export-powerbi` | Export Power BI-ready CSV artifacts |
+
+### Incident Ops
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/incident/runbook/{failure_family}` | Operator runbook for a failure family |
+| `GET` | `/incident/correlate` | Correlate incident against nearby changes |
+| `GET` | `/fleet/health` | Fleet-level health and recurrence view |
+
+---
+
+## Sample Outputs
+
+=======
+## Quickstart
+
+### 1. Install dependencies
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
+```
+
+### 2. Train or retrain the model
+
+```bash
+cd ml_model
+python train_model.py
+cd ..
+```
+
+### 3. Start the API server
+
+```bash
+uvicorn main:app --reload
+```
+
+### 4. Run the CLI
+
+```bash
+python3 cli.py analyze sample.log
+python3 cli.py replay 1
+python3 cli.py simulate-rule timeout_rule probable_owner platform-networking
+python3 cli.py rollback-preview 1
+python3 cli.py report
+```
+
+### 5. Start the dashboard
+
+```bash
+cd autoops-ui
+npm install
+npm run dev
+```
+
+---
+
+## Example Workflow
+
+```bash
+# Analyze a failing log
+python3 cli.py analyze sample.log
+
+# Replay a stored incident by ID
+python3 cli.py replay 1
+
+# Simulate a rule change before applying it
+python3 cli.py simulate-rule timeout_rule probable_owner platform-networking
+
+# Show only the rule diff
+python3 cli.py rule-diff timeout_rule probable_owner platform-networking
+
+# Update a detection rule
+python3 cli.py update-rule-cmd timeout_rule probable_owner platform-networking --actor kriti
+
+# Inspect the audit trail
+python3 cli.py audit
+
+# Preview rollback impact for an audit event
+python3 cli.py rollback-preview 1
+
+# Generate a release-risk report
+python3 cli.py report
+
+# Rebuild reporting / analytics tables
+python3 cli.py rebuild-reporting
+
+# Correlate an incident against nearby changes
+python3 cli.py incident-correlate --incident-id 1 --window-minutes 60
+
+# Generate operator runbook for a failure family
+python3 cli.py incident-runbook dns
+
+# View fleet-health signals
+python3 cli.py fleet-health
+
+# Export Power BI artifacts
+python3 cli.py export-powerbi
+```
+
+---
+
+## CLI Reference
+
+### Core workflow
+
+```bash
+python3 cli.py analyze <logfile>
+python3 cli.py report
+python3 cli.py replay <id>
+python3 cli.py audit
+python3 cli.py health
+```
+
+### Reporting workflow
+
+```bash
+python3 cli.py rebuild-reporting
+python3 cli.py validate-data
+python3 cli.py compare-windows --before-limit 10 --after-limit 10
+python3 cli.py export-powerbi
+```
+
+### Operator workflow
+
+```bash
+python3 cli.py incident-runbook <failure_family>
+python3 cli.py incident-correlate --incident-id 1 --window-minutes 60
+python3 cli.py fleet-health
+```
+
+### Rule and admin workflow
+
+```bash
+python3 cli.py simulate-rule <rule_id> <field> <value>
+python3 cli.py rule-diff <rule_id> <field> <value>
+python3 cli.py update-rule-cmd <rule_id> <field> <value> --actor <name>
+python3 cli.py rollback-preview <audit_event_id>
+```
+
+---
+
+## API Endpoints
+
+### Core
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -374,6 +642,7 @@ python3 cli.py rollback-preview <audit_event_id>
 
 ## Sample Outputs
 
+>>>>>>> 4aff16f (Add incident inbox, multi-source ingestion, runbooks, and fleet health workflows)
 ### Sample JSON Incident
 
 ```json
@@ -518,7 +787,11 @@ python3 cli.py rollback-preview <audit_event_id>
 
 ```json
 {
+<<<<<<< HEAD
   "failure_family": "dns_failure",
+=======
+  "failure_family": "dns",
+>>>>>>> 4aff16f (Add incident inbox, multi-source ingestion, runbooks, and fleet health workflows)
   "first_checks": [
     "verify DNS resolver reachability from affected hosts",
     "check whether one hostname or zone is disproportionately impacted",
@@ -765,4 +1038,8 @@ SRE · Production Engineering · Release Engineering · Internal Tooling · Plat
 
 ## License
 
+<<<<<<< HEAD
 Add your preferred license here.
+=======
+Add your preferred license here.
+>>>>>>> 4aff16f (Add incident inbox, multi-source ingestion, runbooks, and fleet health workflows)
