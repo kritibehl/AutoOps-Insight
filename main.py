@@ -12,6 +12,7 @@ from analysis.network_signatures import infer_network_family
 from analysis.runbooks import get_runbook
 from analysis.correlation import correlate_incident
 from analysis.fleet_health import fleet_summary
+from analysis.decision_engine import automated_decision, blast_radius_estimate
 from fastapi.responses import PlainTextResponse
 from prometheus_client import Counter, generate_latest
 
@@ -312,3 +313,14 @@ def fleet_health_view():
 
 
 app.include_router(incident_ops_router)
+
+
+
+@app.get("/incident/decision/{incident_id}")
+def incident_decision(incident_id: int):
+    return automated_decision(incident_id)
+
+
+@app.get("/incident/blast-radius/{incident_id}")
+def incident_blast_radius(incident_id: int, window_minutes: int = 60):
+    return blast_radius_estimate(incident_id, window_minutes=window_minutes)

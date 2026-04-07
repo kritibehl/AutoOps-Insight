@@ -10,6 +10,7 @@ from analytics_exports import export_powerbi_bundle
 from analysis.runbooks import get_runbook
 from analysis.correlation import correlate_incident
 from analysis.fleet_health import fleet_summary
+from analysis.decision_engine import automated_decision, blast_radius_estimate
 
 
 from classifiers.rule_admin import update_rule
@@ -252,6 +253,19 @@ def incident_correlate(incident_id: int = 0, signature: str = "", window_minutes
 @app.command("fleet-health")
 def fleet_health_cmd() -> None:
     print(fleet_summary())
+
+
+
+
+
+@app.command("incident-decision")
+def incident_decision_cmd(incident_id: int) -> None:
+    print(automated_decision(incident_id))
+
+
+@app.command("incident-blast-radius")
+def incident_blast_radius_cmd(incident_id: int, window_minutes: int = 60) -> None:
+    print(blast_radius_estimate(incident_id, window_minutes=window_minutes))
 
 if __name__ == "__main__":
     app()
