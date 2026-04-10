@@ -1,3 +1,4 @@
+from connector_ops.api import router as connector_ops_router
 from contextlib import asynccontextmanager
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -246,6 +247,10 @@ def metrics():
 
 
 @app.get("/healthz")
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 def healthz():
     return {"status": "ok"}
 
@@ -324,3 +329,4 @@ def incident_decision(incident_id: int):
 @app.get("/incident/blast-radius/{incident_id}")
 def incident_blast_radius(incident_id: int, window_minutes: int = 60):
     return blast_radius_estimate(incident_id, window_minutes=window_minutes)
+app.include_router(connector_ops_router)
