@@ -1,0 +1,117 @@
+import os
+from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+
+from ml_predictor import analyze_log_text
+from storage.audit import get_recent_audit_events, init_audit_db
+from storage.history import (
+    get_analysis_by_id,
+    get_recent_analyses,
+    get_report_summary,
+    get_signature_stats,
+    get_top_recurring_signatures,
+    init_db,
+    record_analysis,
+)
+
+AUTOOPS_TOKEN = os.getenv("AUTOOPS_TOKEN", "dev-token")
+
+app = FastAPI(title="AutoOps Insight")
+
+
+@app.on_event("startup")
+def startup():
+    init_db()
+    init_audit_db()
+
+
+@app.get("/")
+def root():
+    return {"message": "AutoOps Insight is running!"}
+
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
+
+
+@app.post("/integrations/github-actions/ingest")
+async def ingest_github_actions_failure(
+    file: UploadFile = File(...),
+    x_autoops_token: str | None = Header(default=None),
+    x_repo_name: str | None = Header(default=None),
+    x_workflow_name: str | None = Header(default=None),
+    x_run_id: str | None = Header(default=None),
+):
+    if x_autoops_token != AUTOOPS_TOKEN:
+        raise HTTPException(status_code=401, detail="invalid token")
+
+    content = await file.read()
+    text = content.decode("utf-8")
+    result = analyze_log_text(text)
+
+    enriched = record_analysis(
+        result,
+        filename=file.filename,
+        repo_name=x_repo_name,
+        workflow_name=x_workflow_name,
+        run_id=x_run_id,
+        raw_text=text,
+    )
+
+    stats = get_signature_stats(result["signature"])
+
+    return {
+        "status": "ingested",
+        "repo": x_repo_name,
+        "workflow": x_workflow_name,
+        "run_id": x_run_id,
+        "incident_type": enriched["incident_type"],
+        "failure_family": result["failure_family"],
+        "signature": result["signature"],
+        "recurrence_total": stats["total_count"],
+        "confidence": enriched["confidence"],
+        "likely_trigger": enriched["likely_trigger"],
+        "trigger_confidence": enriched["trigger_confidence"],
+        "root_cause": enriched["root_cause"],
+        "release_decision": enriched["release_decision"],
+        "decision_confidence": enriched["decision_confidence"],
+        "decision_reason": enriched["decision_reason"],
+        "action": enriched["action"],
+    }
+
+
+@app.get("/dashboard/summary")
+def dashboard_summary(limit: int = 100):
+    summary = get_report_summary()
+    return {
+        "top_failures": summary["top_failures"],
+        "noisy_services": summary["noisy_services"],
+        "action_summary": {
+            "hold_release": sum(1 for r in get_recent_analyses(limit) if r.get("release_decision") == "hold_release"),
+            "investigate": sum(1 for r in get_recent_analyses(limit) if r.get("release_decision") == "investigate"),
+        },
+        "recurrence_heatmap": summary["top_recurring_signatures"],
+    }
+
+
+@app.get("/history/recent")
+def history_recent(limit: int = 20):
+    return {"items": get_recent_analyses(limit=limit)}
+
+
+@app.get("/history/recurring")
+def history_recurring(limit: int = 10):
+    return {"items": get_top_recurring_signatures(limit=limit)}
+
+
+@app.get("/history/analysis/{analysis_id}")
+def history_analysis(analysis_id: int):
+    result = get_analysis_by_id(analysis_id)
+    if result is None:
+        return {"error": "analysis not found"}
+    return result
+
+
+@app.get("/audit/recent")
+def audit_recent(limit: int = 20):
+    return {"items": get_recent_audit_events(limit=limit)}

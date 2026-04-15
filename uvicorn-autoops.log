@@ -1,0 +1,20 @@
+INFO:     Started server process [32747]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:55596 - "GET /support/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55737 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55738 - "GET /dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55739 - "GET /incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55740 - "GET /dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55737 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55738 - "GET /incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55891 - "GET /dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55890 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55892 - "GET /incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55891 - "GET /dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55893 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55890 - "GET /incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56099 - "GET /support/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52044 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52045 - "POST /graphql/ HTTP/1.1" 404 Not Found

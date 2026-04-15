@@ -15,6 +15,7 @@ env/
 
 # Environment files
 .env
+<<<<<<< HEAD
 .env.*
 !.env.example
 
@@ -41,3 +42,8 @@ autoops-ui/dist/
 
 # Local conflict backups
 *.conflict_backup
+=======
+
+.venv/
+.DS_Store
+>>>>>>> 1f30ae5 (Ignore local virtualenv and macOS metadata)
