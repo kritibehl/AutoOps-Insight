@@ -1,8 +1,8 @@
 <div align="center">
 
-# AutoOps-Insight
+# AutoOps-Insight — CI Failure Intelligence and Release Risk Reporting
 
-**Operator-facing incident triage tool that converts noisy CI and infra logs into structured incident evidence, recurrence signals, and operator-ready guidance**
+**Converts noisy CI and infra logs into structured incident evidence, recurrence signals, and operator-ready release decisions.**
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -13,25 +13,87 @@
 
 ---
 
-> CI failures don't fail loudly. They fail ambiguously, repeatedly, and in ways that look different each time even when they're the same underlying issue.
-> **AutoOps converts raw CI and infra logs into structured incident intelligence.**
+## From Raw Logs → Release Decision
+
+```json
+{
+  "incident_type": "dns_failure",
+  "recurrence": 3,
+  "release_decision": "hold_release"
+}
+```
+
+Full incident record:
+
+```json
+{
+  "predicted_issue": "timeout",
+  "confidence": 0.95,
+  "failure_family": "timeout",
+  "severity": "high",
+  "signature": "timeout:733da8a4e20740af",
+  "likely_cause": "operation exceeded threshold or dependency responded too slowly",
+  "first_remediation_step": "inspect the exact timed-out operation and compare recent latency trends",
+  "probable_owner": "platform-networking",
+  "release_blocking": true,
+  "recurrence": {
+    "total_count": 3,
+    "is_recurring": true
+  }
+}
+```
 
 ---
 
-## Who This Helps
+## The Problem
 
-**On-call engineers** — Move from raw logs to structured incident evidence, likely cause, escalation path, and mitigation steps faster.
+When a CI pipeline fails, an on-call engineer opens a wall of logs and starts guessing.
 
-**Release owners** — Surface release-blocking regressions, nearby change correlation, and rollback/no-rollback guidance for safer release judgment.
+The raw log tells you what happened last. It does not tell you whether this failure has appeared before, whether something changed near the incident window, whether rollback is worth trying, or who owns the problem. AutoOps encodes those answers.
 
-**Platform and reliability teams** — Highlight recurring failure signatures, noisy services, blast-radius patterns, and repeated regressions across services and subsystems.
+---
+
+## Release Risk Output
+
+```markdown
+## Release Risk Summary
+- Release risk:               HIGH
+- Total analyses:             3
+- Release-blocking incidents: 3
+
+Top recurring signature:
+  timeout:733da8a4e20740af | family=timeout | severity=high | count=3
+
+Recommendation:
+  Repeated failure signatures present. Investigate before promoting build.
+```
+
+---
+
+## Dashboard Screenshots
+
+**Fleet Health and Root-Cause Report** — Noisy-service ranking, top recurring signatures, root-cause distribution:
+
+![AutoOps fleet health and root-cause report](docs/screenshots/autoops-fleet-health-root-cause.png)
+
+**Audit Log Traceability** — Rule update with actor, timestamp, and before/after diff:
+
+![AutoOps audit log](docs/screenshots/autoops-audit-log.png)
+
+**Incident Replay and Test Validation** — Replayed stored incident with recurrence metadata and passing test run:
+
+![AutoOps incident replay](docs/screenshots/autoops-incident-replay.png)
+
+**Audit Diff and Rollback Preview UI** — Field-level diff inspection for a rule update:
+
+![AutoOps audit diff and rollback preview UI](docs/screenshots/autoops-audit-diff-rollback-ui.png)
 
 ---
 
 ## Operator Workflow
 
 ```
-ingest logs → classify incident → correlate changes → surface recurrence → simulate rule change → generate guidance
+ingest logs → classify incident → fingerprint → correlate changes → surface recurrence → release decision
 ```
 
 ---
@@ -47,32 +109,15 @@ ingest logs → classify incident → correlate changes → surface recurrence �
 
 ---
 
-## Structured Incident Record
+## Recurrence Detection: Validated
 
-Each log ingestion produces a fully structured incident:
+From live ingestion runs:
 
-```json
-{
-  "predicted_issue": "timeout",
-  "confidence": 0.95,
-  "failure_family": "timeout",
-  "severity": "high",
-  "signature": "timeout:733da8a4e20740af",
-  "summary": "Detected failure family: timeout. Key evidence: Timeout connecting to registry.",
-  "likely_cause": "operation exceeded threshold or dependency responded too slowly",
-  "first_remediation_step": "inspect the exact timed-out operation and compare recent latency trends",
-  "next_debugging_action": "check downstream service latency, retries, and resource saturation",
-  "probable_owner": "platform-networking",
-  "release_blocking": true,
-  "evidence": [{ "line_number": 1, "text": "ERROR: Timeout connecting to registry." }],
-  "recurrence": {
-    "total_count": 3,
-    "first_seen": "2026-03-12T16:18:31Z",
-    "last_seen": "2026-03-12T16:22:41Z",
-    "is_recurring": true
-  }
-}
-```
+- **3 persisted incident records**
+- **2 distinct failure families classified:** `timeout`, `dns_failure`
+- **1 recurring signature detected:** `dns_failure:818a0911c2c842c0` appearing twice
+
+The recurring signature means AutoOps identified that two separate CI failures were the same underlying infrastructure issue — not two independent problems.
 
 ---
 
@@ -95,36 +140,7 @@ Classification is driven by `config/rules.yaml` — no backend code changes requ
 
 ---
 
-## Recurrence Detection: Validated
-
-From live ingestion runs:
-
-- **3 persisted incident records**
-- **2 distinct failure families classified:** `timeout`, `dns_failure`
-- **1 recurring signature detected:** `dns_failure:818a0911c2c842c0` appearing twice
-
-The recurring signature means AutoOps identified that two separate CI failures were the same underlying infrastructure issue — not two independent problems.
-
----
-
-## Detection Logic
-
-**Rule-based layer** — deterministic pattern matching: `timeout`, `dns_failure`, `connection_refused`, `tls_handshake`, `retry_exhausted`, `oom`, `flaky_test_signature`, `dependency_unavailable`, `crash_loop`, `latency_spike`
-
-**ML fallback** — TF-IDF vectorization and Logistic Regression trained on labeled log data (`ml_model/log_train.csv`). Each analysis record indicates which detection path was used.
-
----
-
 ## Timeline Correlation Engine
-
-Correlates incident windows with nearby operational context:
-
-- Deploy or rollout timing
-- Change/config activity bursts
-- Release-blocking concentration
-- Owner spread and failure-family clustering
-
-### Sample correlation output
 
 ```json
 {
@@ -149,7 +165,7 @@ Correlates incident windows with nearby operational context:
 
 ## Rule Simulation and Impact Preview
 
-Dry-run rule changes against stored incidents before applying them.
+Dry-run rule changes against stored incidents before applying:
 
 ```json
 {
@@ -166,7 +182,7 @@ Dry-run rule changes against stored incidents before applying them.
 }
 ```
 
-### Rollback preview
+### Rollback Preview
 
 ```json
 {
@@ -179,29 +195,7 @@ Dry-run rule changes against stored incidents before applying them.
 
 ---
 
-## Release Risk Reporting
-
-```markdown
-# AutoOps Insight Report
-
-## Release Risk Summary
-- Release risk: **high**
-- Total analyses: **3**
-- Release-blocking incidents: **3**
-
-## Top Recurring Signatures
-- `timeout:733da8a4e20740af` | family=timeout | severity=high | count=3
-
-## Recommendation
-Repeated failure signatures are present at levels that may indicate regression or release instability.
-Investigate recurring signatures before promoting the current build.
-```
-
----
-
 ## Operator Runbook Generation
-
-For each incident family, AutoOps generates structured guidance:
 
 ```json
 {
@@ -225,75 +219,11 @@ For each incident family, AutoOps generates structured guidance:
 
 ---
 
-## Storage and Persistence
+## Detection Logic
 
-**Primary:** PostgreSQL with Alembic-managed schema migrations
+**Rule-based layer** — deterministic pattern matching for: `timeout`, `dns_failure`, `connection_refused`, `tls_handshake`, `retry_exhausted`, `oom`, `flaky_test_signature`, `dependency_unavailable`, `crash_loop`, `latency_spike`
 
-**Fallback:** SQLite for local development
-
-The pluggable persistence layer decouples classification from storage — one configuration line swaps backends, not N modules.
-
-```bash
-docker run -e POSTGRES_PASSWORD=pass -p 5432:5432 postgres:15
-alembic upgrade head
-uvicorn main:app --reload
-```
-
----
-
-## Dashboard
-
-React/Vite frontend (`autoops-ui/`) surfacing:
-
-- Release risk score and blocker count
-- Recurring signature panel
-- Anomaly context
-- Recent incident breakdown
-- Failure-family distribution
-- Markdown report preview
-- Audit log with field-level diff inspection
-
-### Screenshots
-
-**Audit Log Traceability** — Rule update with actor, timestamp, and before/after diff:
-
-![AutoOps audit log](docs/screenshots/autoops-audit-log.png)
-
-**Incident Replay and Test Validation** — Replayed stored incident with recurrence metadata:
-
-![AutoOps incident replay](docs/screenshots/autoops-incident-replay.png)
-
-**Audit Diff and Rollback Preview UI** — Field-level diff inspection for a rule update:
-
-![AutoOps audit diff and rollback preview UI](docs/screenshots/autoops-audit-diff-rollback-ui.png)
-
-**Fleet Health and Root-Cause Report** — Noisy-service ranking and top recurring signatures:
-
-![AutoOps fleet health and root-cause report](docs/screenshots/autoops-fleet-health-root-cause.png)
-
----
-
-## Fleet Health View
-
-Surfaces across all services:
-
-- Top recurring incident sources
-- Noisy-service ranking
-- Highest blast-radius regressions
-- Incident recurrence by subsystem
-- MTTR-style recurrence windows
-
----
-
-## Power BI Export
-
-Generates BI-ready CSV exports under `bi_exports/`:
-
-`reporting_daily_summary.csv` · `reporting_weekly_summary.csv` · `reporting_pipeline_trends.csv` · `reporting_root_cause_counts.csv` · `reporting_deployment_regressions.csv`
-
-```bash
-python3 cli.py export-powerbi
-```
+**ML fallback** — TF-IDF vectorization and Logistic Regression trained on labeled log data (`ml_model/log_train.csv`). Each analysis record indicates which detection path was used.
 
 ---
 
@@ -301,11 +231,25 @@ python3 cli.py export-powerbi
 
 | Before | After AutoOps |
 |---|---|
-| Read raw logs manually | Classify into a concrete failure family |
+| Read raw logs manually | Classify into concrete failure family |
 | Guess likely owner from error strings | Surface probable owner and escalation route |
-| Check dashboards separately for timing | Correlate with nearby incidents and changes in a bounded window |
+| Check dashboards separately for timing | Correlate nearby incidents and changes in bounded window |
 | Search for nearby deploys by hand | Automated timeline correlation |
 | Decide rollback with incomplete context | Fleet-level recurrence and blast-radius signals |
+
+---
+
+## Storage and Persistence
+
+**Primary:** PostgreSQL with Alembic-managed schema migrations
+
+**Fallback:** SQLite for local development
+
+```bash
+docker run -e POSTGRES_PASSWORD=pass -p 5432:5432 postgres:15
+alembic upgrade head
+uvicorn main:app --reload
+```
 
 ---
 
@@ -321,26 +265,6 @@ python3 cli.py export-powerbi
 | `GET` | `/fleet/health` | Fleet-level health and recurrence view |
 | `POST` | `/reporting/export-powerbi` | Export Power BI-ready CSV artifacts |
 | `GET` | `/metrics` | Prometheus counters |
-
----
-
-## CI Integration
-
-GitHub Actions workflow automatically: runs CLI health check, analyzes sample logs, generates markdown and JSON report artifacts, uploads artifacts and SQLite DB for inspection.
-
----
-
-## Key Engineering Decisions
-
-**YAML rules** — detection patterns, severity, ownership hints, and remediation guidance update without backend code changes.
-
-**Stable signature fingerprinting** — recurring incidents are identified across noisy repeated logs deterministically.
-
-**Heuristic anomaly detection** — preserves explainability for operational triage without overfitting.
-
-**Rule simulation before commit** — operators preview impact of any rule change before it affects live classification.
-
-**API + CLI + dashboard + CI** — same system supports debugging, automation, visual inspection, and admin workflows.
 
 ---
 
@@ -362,9 +286,42 @@ python3 cli.py analyze sample.log
 # Generate release risk report
 python3 cli.py report
 
+# View fleet health
+python3 cli.py fleet-health
+
+# Simulate a rule change
+python3 cli.py simulate-rule timeout_rule probable_owner platform-networking
+
 # Start dashboard
 cd autoops-ui && npm install && npm run dev
 ```
+
+---
+
+## CI Integration
+
+GitHub Actions workflow automatically: runs CLI health check, analyzes sample logs, generates markdown and JSON report artifacts, uploads artifacts and SQLite DB for inspection.
+
+---
+
+## Why This Matters in Production
+
+On-call triage is a time and context problem. Engineers who have been with a system for two years can glance at a log and know if a failure is new or recurring, which team owns it, and whether rollback is worth trying. That knowledge doesn't transfer and doesn't scale. AutoOps structures it: stable fingerprints replace pattern memory, correlation windows replace manual dashboard-hopping, runbook generation replaces tribal knowledge. The result is faster triage and better release judgment regardless of who is on call.
+
+---
+
+## Scope and Limitations
+
+- Log-based analysis, not real-time metric stream ingestion
+- ML model trained on labeled sample data; performance on novel log formats requires retraining
+- Correlation is time-window based, not causal trace analysis
+- SQLite fallback; PostgreSQL recommended for production use
+
+---
+
+## Signals For
+
+`SRE` · `Production Engineering` · `Release Engineering` · `Internal Developer Tooling` · `Platform / Infrastructure`
 
 ---
 
@@ -378,5 +335,5 @@ Python · FastAPI · React/Vite · PostgreSQL · SQLite · Alembic · scikit-lea
 
 - [KubePulse](https://github.com/kritibehl/KubePulse) — Kubernetes resilience validation and deployment safety
 - [Faultline](https://github.com/kritibehl/faultline) — exactly-once execution under distributed failure
-- [Postmortem Atlas](https://github.com/kritibehl/postmortem-atlas) — historical production outage analysis
 - [DetTrace](https://github.com/kritibehl/dettrace) — deterministic replay for concurrency failures
+- [Postmortem Atlas](https://github.com/kritibehl/postmortem-atlas) — historical production outage analysis
