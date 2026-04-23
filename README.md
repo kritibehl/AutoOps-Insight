@@ -1099,13 +1099,6 @@ SRE · Production Engineering · Release Engineering · Internal Tooling · Plat
 
 ## License
 
-<<<<<<< HEAD
-Add your preferred license here.
-=======
-Add your preferred license here.
->>>>>>> 4aff16f (Add incident inbox, multi-source ingestion, runbooks, and fleet health workflows)
-
-
 ## Live CI Integration
 
 AutoOps is being wired to ingest CI failures from Faultline, KubePulse, FairEval, and DetTrace so recurrence and release-risk decisions operate on real system failures, not isolated samples.
