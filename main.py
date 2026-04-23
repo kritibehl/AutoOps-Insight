@@ -1,25 +1,23 @@
 import os
-
 from fastapi import FastAPI, File, Header, HTTPException, UploadFile
-from fastapi.responses import PlainTextResponse
 
 from ml_predictor import analyze_log_text
+from schemas import (
+    DashboardSummaryResponse,
+    IncidentRecord,
+    IncidentsResponse,
+    IngestResponse,
+    MetricsResponse,
+)
 from storage.audit import get_recent_audit_events, init_audit_db
 from storage.history import (
-    get_all_analyses,
     get_analysis_by_id,
-    get_audit_event_by_id,
     get_recent_analyses,
     get_report_summary,
     get_signature_stats,
     get_top_recurring_signatures,
     init_db,
     record_analysis,
-)
-from analysis.release.fleet_views import (
-    release_window_blast_radius,
-    service_level_recurrence_heatmap,
-    top_noisy_components,
 )
 
 AUTOOPS_TOKEN = os.getenv("AUTOOPS_TOKEN", "dev-token")
@@ -43,27 +41,8 @@ def healthz():
     return {"status": "ok"}
 
 
-@app.post("/analyze")
-async def analyze_log(file: UploadFile = File(...)):
-    content = await file.read()
-    text = content.decode("utf-8")
-    result = analyze_log_text(text)
-    enriched = record_analysis(result, filename=file.filename, raw_text=text)
-    stats = get_signature_stats(result["signature"])
-
-    return {
-        "failure_family": result["failure_family"],
-        "signature": result["signature"],
-        "severity": result["severity"],
-        "summary": result["summary"],
-        "root_cause": enriched.get("root_cause") if isinstance(enriched, dict) else None,
-        "release_decision": enriched.get("release_decision") if isinstance(enriched, dict) else None,
-        "decision_confidence": enriched.get("decision_confidence") if isinstance(enriched, dict) else None,
-        "recurrence_total": stats["total_count"],
-    }
-
-
-@app.post("/integrations/github-actions/ingest")
+@app.post("/ingest", response_model=IngestResponse)
+@app.post("/integrations/github-actions/ingest", response_model=IngestResponse)
 async def ingest_github_actions_failure(
     file: UploadFile = File(...),
     x_autoops_token: str | None = Header(default=None),
@@ -78,10 +57,9 @@ async def ingest_github_actions_failure(
     text = content.decode("utf-8")
     result = analyze_log_text(text)
 
-    filename = f"{x_repo_name or 'unknown'}__{x_workflow_name or 'unknown'}__{x_run_id or 'unknown'}.log"
     enriched = record_analysis(
         result,
-        filename=filename,
+        filename=file.filename,
         repo_name=x_repo_name,
         workflow_name=x_workflow_name,
         run_id=x_run_id,
@@ -90,27 +68,95 @@ async def ingest_github_actions_failure(
 
     stats = get_signature_stats(result["signature"])
 
-    return {
-        "status": "ingested",
-        "repo": x_repo_name,
-        "workflow": x_workflow_name,
-        "run_id": x_run_id,
-        "failure_family": result["failure_family"],
-        "signature": result["signature"],
-        "root_cause": enriched.get("root_cause") if isinstance(enriched, dict) else None,
-        "release_decision": enriched.get("release_decision") if isinstance(enriched, dict) else None,
-        "decision_confidence": enriched.get("decision_confidence") if isinstance(enriched, dict) else None,
-        "rule_based_confidence": enriched.get("rule_based_confidence") if isinstance(enriched, dict) else None,
-        "ml_fallback_confidence": enriched.get("ml_fallback_confidence") if isinstance(enriched, dict) else None,
-        "ambiguous_classification": enriched.get("ambiguous_classification") if isinstance(enriched, dict) else None,
-        "runbook_confidence": enriched.get("runbook_confidence") if isinstance(enriched, dict) else None,
-        "recurrence_total": stats["total_count"],
-    }
+    return IngestResponse(
+        status="ingested",
+        repo=x_repo_name,
+        workflow=x_workflow_name,
+        run_id=x_run_id,
+        incident_type=enriched["incident_type"],
+        failure_family=result["failure_family"],
+        signature=result["signature"],
+        recurrence_total=stats["total_count"],
+        confidence=enriched["confidence"],
+        likely_trigger=enriched["likely_trigger"],
+        trigger_confidence=enriched["trigger_confidence"],
+        root_cause=enriched["root_cause"],
+        release_decision=enriched["release_decision"],
+        decision_confidence=enriched["decision_confidence"],
+        decision_reason=enriched["decision_reason"],
+        action=enriched["action"],
+    )
 
 
-@app.get("/history/recent")
-def history_recent(limit: int = 20):
-    return {"items": get_recent_analyses(limit=limit)}
+@app.get("/incidents", response_model=IncidentsResponse)
+def incidents(limit: int = 50):
+    rows = get_recent_analyses(limit=limit)
+    items = []
+    for row in rows:
+        items.append(
+            IncidentRecord(
+                id=row.get("id"),
+                created_at=row.get("created_at"),
+                repo_name=row.get("repo_name"),
+                workflow_name=row.get("workflow_name"),
+                run_id=row.get("run_id"),
+                incident_type=row.get("predicted_issue") or row.get("failure_family", "unknown"),
+                failure_family=row.get("failure_family", "unknown"),
+                signature=row.get("signature", ""),
+                recurrence_total=len(get_signature_stats(row.get("signature", ""))["recent_occurrences"]) or 1,
+                confidence=0.91 if row.get("failure_family") != "unknown" else 0.55,
+                likely_trigger=row.get("likely_trigger"),
+                trigger_confidence=row.get("trigger_confidence"),
+                root_cause=row.get("root_cause"),
+                release_decision=row.get("release_decision") or "investigate",
+                decision_confidence=row.get("decision_confidence") or 0.60,
+                decision_reason=[],
+                action=row.get("release_decision") or "investigate",
+            )
+        )
+    return IncidentsResponse(items=items)
+
+
+@app.get("/incidents/{analysis_id}")
+def incident_by_id(analysis_id: int):
+    result = get_analysis_by_id(analysis_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="analysis not found")
+    return result
+
+
+@app.get("/metrics", response_model=MetricsResponse)
+def metrics():
+    summary = get_report_summary()
+    top_failure_family = None
+    if summary["top_failures"]:
+        top_failure_family = summary["top_failures"][0]["failure_family"]
+
+    recent = get_recent_analyses(limit=200)
+    hold_release_count = sum(1 for r in recent if r.get("release_decision") == "hold_release")
+    investigate_count = sum(1 for r in recent if r.get("release_decision") == "investigate")
+
+    return MetricsResponse(
+        total_analyses=summary["total_analyses"],
+        hold_release_count=hold_release_count,
+        investigate_count=investigate_count,
+        top_failure_family=top_failure_family,
+    )
+
+
+@app.get("/dashboard/summary", response_model=DashboardSummaryResponse)
+def dashboard_summary(limit: int = 100):
+    summary = get_report_summary()
+    recent = get_recent_analyses(limit=limit)
+    return DashboardSummaryResponse(
+        top_failures=summary["top_failures"],
+        noisy_services=summary["noisy_services"],
+        action_summary={
+            "hold_release": sum(1 for r in recent if r.get("release_decision") == "hold_release"),
+            "investigate": sum(1 for r in recent if r.get("release_decision") == "investigate"),
+        },
+        recurrence_heatmap=summary["top_recurring_signatures"],
+    )
 
 
 @app.get("/history/recurring")
@@ -118,60 +164,6 @@ def history_recurring(limit: int = 10):
     return {"items": get_top_recurring_signatures(limit=limit)}
 
 
-@app.get("/history/analysis/{analysis_id}")
-def history_analysis(analysis_id: int):
-    result = get_analysis_by_id(analysis_id)
-    if result is None:
-        return {"error": "analysis not found"}
-    return result
-
-
-@app.get("/reports/summary")
-def reports_summary():
-    return get_report_summary()
-
-
 @app.get("/audit/recent")
 def audit_recent(limit: int = 20):
     return {"items": get_recent_audit_events(limit=limit)}
-
-
-@app.get("/audit/{audit_id}")
-def get_audit_event_endpoint(audit_id: int):
-    event = get_audit_event_by_id(audit_id)
-    if event is None:
-        return {"error": "audit event not found", "audit_id": audit_id}
-    return event
-
-
-@app.get("/intelligence/clusters")
-def intelligence_clusters(limit: int = 20):
-    return {"items": get_top_recurring_signatures(limit=limit)}
-
-
-@app.get("/fleet/recurrence-heatmap")
-def fleet_recurrence_heatmap(limit: int = 200):
-    rows = get_recent_analyses(limit=limit)
-    return {"items": service_level_recurrence_heatmap(rows)}
-
-
-@app.get("/fleet/top-noisy-components")
-def fleet_top_noisy_components(limit: int = 200, top_k: int = 10):
-    rows = get_recent_analyses(limit=limit)
-    return {"items": top_noisy_components(rows, limit=top_k)}
-
-
-@app.get("/release/blast-radius")
-def release_blast_radius(limit: int = 200):
-    rows = get_recent_analyses(limit=limit)
-    return release_window_blast_radius(rows)
-
-
-@app.get("/release/summary")
-def release_summary():
-    return get_report_summary()
-
-
-@app.get("/metrics", response_class=PlainTextResponse)
-def metrics():
-    return ""

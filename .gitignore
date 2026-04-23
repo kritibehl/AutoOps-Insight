@@ -10,3 +10,9 @@ dist/
 .DS_Store
 
 autoops.db
+
+.venv/
+autoops.db
+__pycache__/
+*.pyc
+.DS_Store
