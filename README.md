@@ -2,7 +2,10 @@
 
 # AutoOps-Insight — CI Failure Intelligence and Release Risk Reporting
 
-**Converts noisy CI and infra logs into structured incident evidence, recurrence signals, and operator-ready release decisions.**
+**
+AutoOps-Insight turns noisy CI failures into structured incident intelligence and release decisions.
+
+FastAPI · Kafka · PostgreSQL · React/Vite **
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
