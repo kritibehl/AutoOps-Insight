@@ -1,0 +1,42 @@
+[
+  {
+    "repo": "faireval",
+    "failure_family": "latency_spike",
+    "incident_type": "latency_spike",
+    "action": "hold_release",
+    "confidence": 0.91,
+    "recurrence": 2
+  },
+  {
+    "repo": "faultline",
+    "failure_family": "unknown",
+    "incident_type": "unknown",
+    "action": "investigate",
+    "confidence": 0.55,
+    "recurrence": 2
+  },
+  {
+    "repo": "faireval",
+    "failure_family": "latency_spike",
+    "incident_type": "latency_spike",
+    "action": "hold_release",
+    "confidence": 0.91,
+    "recurrence": 2
+  },
+  {
+    "repo": "faultline",
+    "failure_family": "unknown",
+    "incident_type": "unknown",
+    "action": "investigate",
+    "confidence": 0.55,
+    "recurrence": 2
+  },
+  {
+    "repo": "kubepulse",
+    "failure_family": "dns_failure",
+    "incident_type": "dns_failure",
+    "action": "hold_release",
+    "confidence": 0.91,
+    "recurrence": 1
+  }
+]
