@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 from ml_predictor import analyze_log_text
 from schemas import (
@@ -10,6 +11,7 @@ from schemas import (
     MetricsResponse,
 )
 from storage.audit import get_recent_audit_events, init_audit_db
+from support_engine.root_cause_engine import classify_issue, infer_root_cause, recommend_action, generate_summary
 from storage.history import (
     get_analysis_by_id,
     get_recent_analyses,
@@ -23,6 +25,14 @@ from storage.history import (
 AUTOOPS_TOKEN = os.getenv("AUTOOPS_TOKEN", "dev-token")
 
 app = FastAPI(title="AutoOps Insight")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4174","http://localhost:4173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
@@ -167,3 +177,23 @@ def history_recurring(limit: int = 10):
 @app.get("/audit/recent")
 def audit_recent(limit: int = 20):
     return {"items": get_recent_audit_events(limit=limit)}
+
+@app.post("/support/analyze")
+async def analyze_support_case(payload: dict):
+    text = payload.get("text", "")
+    issue = classify_issue(text)
+    cause = infer_root_cause(issue)
+    action = recommend_action(issue)
+    summary = generate_summary(issue, cause)
+
+    return {
+        "issue_type": issue,
+        "root_cause": cause,
+        "recommended_action": action,
+        "summary": summary,
+        "stakeholder_outputs": {
+            "pm_summary": f"Detected {issue} support issue with likely product risk.",
+            "engineering_bug_report": f"Investigate {issue}; suspected cause: {cause}.",
+            "support_action_plan": f"Recommended support action: {action}.",
+        },
+    }
