@@ -1,3 +1,24 @@
+
+
+def init_support_db():
+    import sqlite3
+    conn = sqlite3.connect("autoops.db")
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS support_incidents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        issue_family TEXT,
+        signature TEXT,
+        recurrence_total INTEGER,
+        confidence REAL,
+        action TEXT,
+        escalation_required INTEGER
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+init_support_db()
+
 import os
 import sqlite3
 from fastapi import FastAPI, File, Header, HTTPException, UploadFile
