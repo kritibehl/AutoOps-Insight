@@ -1,0 +1,11 @@
+{
+  "source": "agentgrid",
+  "event_type": "support_incident",
+  "agent_decision": "escalate",
+  "customer_id": "cust_agentgrid_002",
+  "issue_family": "tool_failure",
+  "message": "AgentGrid tool call failed while fetching product context for a user request.",
+  "trace_id": "ag_trace_002",
+  "workflow": "tool_augmented_answer",
+  "severity": "high"
+}

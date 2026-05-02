@@ -1,5 +1,5 @@
 {
-  "total_support_incidents": 100,
+  "total_support_incidents": 102,
   "top_issue_family": [
     {
       "issue_family": "unsafe_response",
@@ -7,11 +7,15 @@
     },
     {
       "issue_family": "tool_failure",
-      "count": 23
+      "count": 24
     },
     {
       "issue_family": "latency_spike",
       "count": 20
+    },
+    {
+      "issue_family": "missing_context",
+      "count": 12
     },
     {
       "issue_family": "wrong_answer",
@@ -19,10 +23,6 @@
     },
     {
       "issue_family": "retrieval_failure",
-      "count": 11
-    },
-    {
-      "issue_family": "missing_context",
       "count": 11
     }
   ],
@@ -36,12 +36,12 @@
       "count": 23
     },
     {
-      "source": "faireval",
-      "count": 18
+      "source": "agentgrid",
+      "count": 19
     },
     {
-      "source": "agentgrid",
-      "count": 17
+      "source": "faireval",
+      "count": 18
     },
     {
       "source": "dettrace",
@@ -55,11 +55,15 @@
     },
     {
       "action": "check_tool_dependency",
-      "count": 23
+      "count": 24
     },
     {
       "action": "hold_release",
       "count": 20
+    },
+    {
+      "action": "fix_retrieval_pipeline",
+      "count": 12
     },
     {
       "action": "tune_search_and_embeddings",
@@ -67,10 +71,6 @@
     },
     {
       "action": "support_review",
-      "count": 11
-    },
-    {
-      "action": "fix_retrieval_pipeline",
       "count": 11
     }
   ],
@@ -91,5 +91,5 @@
       "recurrence_total": 3
     }
   ],
-  "escalation_count": 50
+  "escalation_count": 51
 }

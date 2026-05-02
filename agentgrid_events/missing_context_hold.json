@@ -1,0 +1,11 @@
+{
+  "source": "agentgrid",
+  "event_type": "support_incident",
+  "agent_decision": "hold",
+  "customer_id": "cust_agentgrid_001",
+  "issue_family": "missing_context",
+  "message": "AgentGrid detected missing context while answering a customer workflow question.",
+  "trace_id": "ag_trace_001",
+  "workflow": "retrieval_augmented_answer",
+  "severity": "high"
+}

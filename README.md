@@ -271,3 +271,26 @@ Python · FastAPI · React/Vite · PostgreSQL · SQLite · Alembic · scikit-lea
 - [KubePulse](https://github.com/kritibehl/KubePulse) — Kubernetes resilience validation and deployment safety
 - [DetTrace](https://github.com/kritibehl/dettrace) — deterministic replay for concurrency failures
 - [Postmortem Atlas](https://github.com/kritibehl/postmortem-atlas) — historical production outage analysis
+
+## Proof Snapshot
+
+- 100 synthetic support incidents generated
+- 5 sources: kubepulse, faultline, faireval, agentgrid, dettrace
+- 6 AI issue families: wrong_answer, missing_context, tool_failure, retrieval_failure, latency_spike, unsafe_response
+- 50 escalations in support analytics proof run
+- Top issue family: unsafe_response
+- AgentGrid hold/escalate events ingested
+- Support metrics expose top issue family, escalation count, recurring blockers, and recommended action distribution
+
+## AgentGrid Case Study
+
+AgentGrid detected a missing-context failure, emitted a support incident event, and AutoOps classified it into a structured incident with:
+
+- issue family: missing_context
+- root cause: retrieval_or_context_pipeline_failure
+- stakeholder outputs:
+  - PM summary
+  - engineering bug report
+  - support action plan
+
+See `docs/agentgrid_case_study.md`.

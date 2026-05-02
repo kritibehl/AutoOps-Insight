@@ -249,6 +249,31 @@ def support_metrics():
             "SELECT COUNT(*) AS c FROM support_incidents WHERE escalation_required = 1"
         ).fetchone()["c"]
 
+        agentgrid_event_count = conn.execute(
+            "SELECT COUNT(*) AS c FROM support_incidents WHERE source = 'agentgrid'"
+        ).fetchone()["c"]
+
+        agentgrid_decisions = [
+            dict(r) for r in conn.execute("""
+                SELECT agent_decision, COUNT(*) AS count
+                FROM support_incidents
+                WHERE source = 'agentgrid'
+                GROUP BY agent_decision
+                ORDER BY count DESC
+            """)
+        ]
+
+        agentgrid_recent = [
+            dict(r) for r in conn.execute("""
+                SELECT created_at, issue_family, signature, recurrence_total, action,
+                       escalation_required, pm_summary, engineering_bug_report, support_action_plan
+                FROM support_incidents
+                WHERE source = 'agentgrid'
+                ORDER BY id DESC
+                LIMIT 5
+            """)
+        ]
+
     return {
         "total_support_incidents": total,
         "top_issue_family": top_issue_family,
@@ -256,4 +281,7 @@ def support_metrics():
         "action_counts": action_counts,
         "recurring_customer_blockers": recurring_customer_blockers,
         "escalation_count": escalation_count,
+        "agentgrid_event_count": agentgrid_event_count,
+        "agentgrid_decisions": agentgrid_decisions,
+        "agentgrid_recent": agentgrid_recent,
     }
