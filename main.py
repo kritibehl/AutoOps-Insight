@@ -1,21 +1,22 @@
 
+
 def init_support_db():
-    import sqlite3
-    conn = sqlite3.connect("autoops.db")
+    conn = sqlite3.connect(SUPPORT_DB_PATH)
+    conn.row_factory = sqlite3.Row
 
     conn.execute("""
     CREATE TABLE IF NOT EXISTS support_incidents (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT,
-        source TEXT DEFAULT 'unknown',
+        source TEXT,
         customer_id TEXT,
         issue_family TEXT,
         signature TEXT,
-        recurrence_total INTEGER DEFAULT 1,
-        confidence REAL DEFAULT 0.0,
+        recurrence_total INTEGER,
+        confidence REAL,
         root_cause TEXT,
         action TEXT,
-        escalation_required INTEGER DEFAULT 0,
+        escalation_required INTEGER,
         pm_summary TEXT,
         engineering_bug_report TEXT,
         support_action_plan TEXT,
@@ -26,36 +27,26 @@ def init_support_db():
     )
     """)
 
-    existing_cols = {
-        row[1] for row in conn.execute("PRAGMA table_info(support_incidents)").fetchall()
-    }
+    # migration-safe column addition
+    cols = [r["name"] for r in conn.execute("PRAGMA table_info(support_incidents)").fetchall()]
 
-    columns = {
-        "created_at": "TEXT",
-        "source": "TEXT DEFAULT 'unknown'",
-        "customer_id": "TEXT",
-        "issue_family": "TEXT",
-        "signature": "TEXT",
-        "recurrence_total": "INTEGER DEFAULT 1",
-        "confidence": "REAL DEFAULT 0.0",
-        "root_cause": "TEXT",
-        "action": "TEXT",
-        "escalation_required": "INTEGER DEFAULT 0",
-        "pm_summary": "TEXT",
-        "engineering_bug_report": "TEXT",
-        "support_action_plan": "TEXT",
-        "agent_decision": "TEXT",
-        "trace_id": "TEXT",
-        "workflow": "TEXT",
-        "severity": "TEXT",
-    }
+    required = [
+        "source",
+        "agent_decision",
+        "workflow",
+        "severity"
+    ]
 
-    for col, typ in columns.items():
-        if col not in existing_cols:
-            conn.execute(f"ALTER TABLE support_incidents ADD COLUMN {col} {typ}")
+    for col in required:
+        if col not in cols:
+            try:
+                conn.execute(f"ALTER TABLE support_incidents ADD COLUMN {col} TEXT")
+            except:
+                pass
 
     conn.commit()
     conn.close()
+
 
 init_support_db()
 
