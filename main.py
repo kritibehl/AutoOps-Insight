@@ -3,6 +3,7 @@
 def init_support_db():
     import sqlite3
     conn = sqlite3.connect("autoops.db")
+
     conn.execute("""
     CREATE TABLE IF NOT EXISTS support_incidents (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -11,13 +12,25 @@ def init_support_db():
         recurrence_total INTEGER,
         confidence REAL,
         action TEXT,
-        escalation_required INTEGER
+        escalation_required INTEGER,
+        source TEXT DEFAULT 'unknown'
     )
     """)
+
+    # Add column if missing (safe migration)
+    try:
+        conn.execute("ALTER TABLE support_incidents ADD COLUMN source TEXT DEFAULT 'unknown'")
+    except:
+        pass
+
     conn.commit()
     conn.close()
 
 init_support_db()
+
+
+
+
 
 import os
 import sqlite3
