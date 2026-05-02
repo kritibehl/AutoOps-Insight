@@ -1,9 +1,18 @@
+import sqlite3
+import os
+from fastapi import FastAPI
+
+app = FastAPI()
+
+SUPPORT_DB_PATH = os.getenv("SUPPORT_DB_PATH", "support_incidents.db")
+
 
 def safe_fetch(conn, query):
     try:
         return [dict(r) for r in conn.execute(query)]
     except:
         return []
+
 
 
 
@@ -15,15 +24,15 @@ def init_support_db():
     CREATE TABLE IF NOT EXISTS support_incidents (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT,
-        source TEXT,
+        source TEXT DEFAULT 'unknown',
         customer_id TEXT,
         issue_family TEXT,
         signature TEXT,
-        recurrence_total INTEGER,
-        confidence REAL,
+        recurrence_total INTEGER DEFAULT 1,
+        confidence REAL DEFAULT 0.0,
         root_cause TEXT,
         action TEXT,
-        escalation_required INTEGER,
+        escalation_required INTEGER DEFAULT 0,
         pm_summary TEXT,
         engineering_bug_report TEXT,
         support_action_plan TEXT,
@@ -34,28 +43,39 @@ def init_support_db():
     )
     """)
 
-    # migration-safe column addition
-    cols = [r["name"] for r in conn.execute("PRAGMA table_info(support_incidents)").fetchall()]
+    existing_cols = {
+        row["name"] for row in conn.execute("PRAGMA table_info(support_incidents)").fetchall()
+    }
 
-    required = [
-        "source",
-        "agent_decision",
-        "workflow",
-        "severity"
-    ]
+    columns = {
+        "created_at": "TEXT",
+        "source": "TEXT DEFAULT 'unknown'",
+        "customer_id": "TEXT",
+        "issue_family": "TEXT",
+        "signature": "TEXT",
+        "recurrence_total": "INTEGER DEFAULT 1",
+        "confidence": "REAL DEFAULT 0.0",
+        "root_cause": "TEXT",
+        "action": "TEXT",
+        "escalation_required": "INTEGER DEFAULT 0",
+        "pm_summary": "TEXT",
+        "engineering_bug_report": "TEXT",
+        "support_action_plan": "TEXT",
+        "agent_decision": "TEXT",
+        "trace_id": "TEXT",
+        "workflow": "TEXT",
+        "severity": "TEXT",
+    }
 
-    for col in required:
-        if col not in cols:
-            try:
-                conn.execute(f"ALTER TABLE support_incidents ADD COLUMN {col} TEXT")
-            except:
-                pass
+    for col, typ in columns.items():
+        if col not in existing_cols:
+            conn.execute(f"ALTER TABLE support_incidents ADD COLUMN {col} {typ}")
 
     conn.commit()
     conn.close()
 
 
-init_support_db()
+# init_support_db()
 
 
 
@@ -66,7 +86,6 @@ init_support_db()
 
 
 import os
-import sqlite3
 from fastapi import FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -324,7 +343,7 @@ def support_metrics():
 
 @app.post("/support/ingest")
 def ingest_agentgrid_support_event(event: dict):
-    init_support_db()
+    # init_support_db()
 
     source = event.get("source", "agentgrid")
     issue_type = event.get("issue_type", "unknown")
@@ -409,3 +428,7 @@ def ingest_agentgrid_support_event(event: dict):
         "decision": decision,
         "severity": severity,
     }
+
+@app.on_event("startup")
+def startup_event():
+    init_support_db()
