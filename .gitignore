@@ -16,3 +16,9 @@ autoops.db
 __pycache__/
 *.pyc
 .DS_Store
+
+api.log
+uvicorn-autoops.log
+*.bak.*
+sample_dns.log
+autoops.db

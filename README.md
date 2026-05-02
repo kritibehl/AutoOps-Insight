@@ -272,15 +272,15 @@ Python · FastAPI · React/Vite · PostgreSQL · SQLite · Alembic · scikit-lea
 - [DetTrace](https://github.com/kritibehl/dettrace) — deterministic replay for concurrency failures
 - [Postmortem Atlas](https://github.com/kritibehl/postmortem-atlas) — historical production outage analysis
 
+
 ## Proof Snapshot
 
-- 100 synthetic support incidents generated
-- 5 sources: kubepulse, faultline, faireval, agentgrid, dettrace
-- 6 AI issue families: wrong_answer, missing_context, tool_failure, retrieval_failure, latency_spike, unsafe_response
-- 50 escalations in support analytics proof run
-- Top issue family: unsafe_response
-- AgentGrid hold/escalate events ingested
-- Support metrics expose top issue family, escalation count, recurring blockers, and recommended action distribution
+- 102 support incidents
+- 5 sources
+- 6 AI issue families
+- 51 escalations
+- 19 AgentGrid events ingested
+
 
 ## AgentGrid Case Study
 
@@ -294,3 +294,12 @@ AgentGrid detected a missing-context failure, emitted a support incident event, 
   - support action plan
 
 See `docs/agentgrid_case_study.md`.
+
+
+## Customer Blockers (Top Issues)
+
+| Issue | Count | Action |
+|---|---:|---|
+| unsafe_response | 24 | escalate_to_safety_review |
+| tool_failure | 24 | check_tool_dependency |
+| latency_spike | 20 | hold_release |

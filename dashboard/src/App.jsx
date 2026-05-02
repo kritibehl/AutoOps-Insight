@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "./index.css";
+import SupportMetrics from "./SupportMetrics";
 
 const API_BASE = "http://127.0.0.1:8001";
 
@@ -34,7 +35,16 @@ function Section({ title, children }) {
   );
 }
 
-export default function App() {
+
+export default function Router() {
+  if (window.location.pathname === "/support") {
+    return <SupportMetrics />;
+  }
+  return <Dashboard />;
+}
+
+function Dashboard() {
+
   const [metrics, setMetrics] = useState(null);
   const [summary, setSummary] = useState(null);
   const [incidents, setIncidents] = useState(null);

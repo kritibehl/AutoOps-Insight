@@ -281,7 +281,10 @@ def support_metrics():
         "action_counts": action_counts,
         "recurring_customer_blockers": recurring_customer_blockers,
         "escalation_count": escalation_count,
-        "agentgrid_event_count": agentgrid_event_count,
+        
+        "agentgrid_events_ingested": agentgrid_event_count,
+        "agentgrid_decision_breakdown": agentgrid_decisions,
+
         "agentgrid_decisions": agentgrid_decisions,
         "agentgrid_recent": agentgrid_recent,
     }
