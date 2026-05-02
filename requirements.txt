@@ -56,3 +56,4 @@ websockets==15.0.1
 bandit
 requests
 pyarrow
+kafka-python
