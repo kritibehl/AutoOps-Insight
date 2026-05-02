@@ -1,5 +1,4 @@
 
-
 def init_support_db():
     import sqlite3
     conn = sqlite3.connect("autoops.db")
@@ -7,26 +6,62 @@ def init_support_db():
     conn.execute("""
     CREATE TABLE IF NOT EXISTS support_incidents (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT,
+        source TEXT DEFAULT 'unknown',
+        customer_id TEXT,
         issue_family TEXT,
         signature TEXT,
-        recurrence_total INTEGER,
-        confidence REAL,
+        recurrence_total INTEGER DEFAULT 1,
+        confidence REAL DEFAULT 0.0,
+        root_cause TEXT,
         action TEXT,
-        escalation_required INTEGER,
-        source TEXT DEFAULT 'unknown'
+        escalation_required INTEGER DEFAULT 0,
+        pm_summary TEXT,
+        engineering_bug_report TEXT,
+        support_action_plan TEXT,
+        agent_decision TEXT,
+        trace_id TEXT,
+        workflow TEXT,
+        severity TEXT
     )
     """)
 
-    # Add column if missing (safe migration)
-    try:
-        conn.execute("ALTER TABLE support_incidents ADD COLUMN source TEXT DEFAULT 'unknown'")
-    except:
-        pass
+    existing_cols = {
+        row[1] for row in conn.execute("PRAGMA table_info(support_incidents)").fetchall()
+    }
+
+    columns = {
+        "created_at": "TEXT",
+        "source": "TEXT DEFAULT 'unknown'",
+        "customer_id": "TEXT",
+        "issue_family": "TEXT",
+        "signature": "TEXT",
+        "recurrence_total": "INTEGER DEFAULT 1",
+        "confidence": "REAL DEFAULT 0.0",
+        "root_cause": "TEXT",
+        "action": "TEXT",
+        "escalation_required": "INTEGER DEFAULT 0",
+        "pm_summary": "TEXT",
+        "engineering_bug_report": "TEXT",
+        "support_action_plan": "TEXT",
+        "agent_decision": "TEXT",
+        "trace_id": "TEXT",
+        "workflow": "TEXT",
+        "severity": "TEXT",
+    }
+
+    for col, typ in columns.items():
+        if col not in existing_cols:
+            conn.execute(f"ALTER TABLE support_incidents ADD COLUMN {col} {typ}")
 
     conn.commit()
     conn.close()
 
 init_support_db()
+
+
+
+
 
 
 
