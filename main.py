@@ -357,3 +357,92 @@ def support_metrics():
         "agentgrid_decisions": agentgrid_decisions,
         "agentgrid_recent": agentgrid_recent,
     }
+
+
+@app.post("/support/ingest")
+def ingest_agentgrid_support_event(event: dict):
+    init_support_db()
+
+    source = event.get("source", "agentgrid")
+    issue_type = event.get("issue_type", "unknown")
+    severity = event.get("severity", "high")
+    decision = event.get("decision", "hold")
+    reason = event.get("reason", issue_type)
+
+    escalation_required = 1 if decision == "escalate" else 0
+
+    conn = sqlite3.connect(SUPPORT_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        """
+        INSERT INTO support_incidents (
+            created_at,
+            source,
+            customer_id,
+            issue_family,
+            signature,
+            recurrence_total,
+            confidence,
+            root_cause,
+            action,
+            escalation_required,
+            pm_summary,
+            engineering_bug_report,
+            support_action_plan,
+            agent_decision,
+            trace_id,
+            workflow,
+            severity
+        )
+        VALUES (
+            datetime('now'),
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        """,
+        (
+            source,
+            "agentgrid-demo",
+            issue_type,
+            reason,
+            1,
+            0.95,
+            reason,
+            decision,
+            escalation_required,
+            f"AgentGrid emitted {decision} for {issue_type}",
+            f"Investigate AgentGrid {issue_type} event",
+            f"Decision={decision}; reason={reason}; severity={severity}",
+            decision,
+            event.get("trace_id", ""),
+            "agentgrid_eval_gate",
+            severity,
+        ),
+    )
+    conn.commit()
+
+    row_id = conn.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
+    conn.close()
+
+    return {
+        "status": "ingested",
+        "id": row_id,
+        "source": source,
+        "issue_type": issue_type,
+        "decision": decision,
+        "severity": severity,
+    }
