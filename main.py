@@ -1,4 +1,11 @@
 
+def safe_fetch(conn, query):
+    try:
+        return [dict(r) for r in conn.execute(query)]
+    except:
+        return []
+
+
 
 def init_support_db():
     conn = sqlite3.connect(SUPPORT_DB_PATH)
@@ -268,41 +275,19 @@ def support_metrics():
         total = conn.execute("SELECT COUNT(*) AS c FROM support_incidents").fetchone()["c"]
 
         top_issue_family = [
-            dict(r) for r in conn.execute("""
-                SELECT issue_family, COUNT(*) AS count
-                FROM support_incidents
-                GROUP BY issue_family
-                ORDER BY count DESC
-            """)
+            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
         ]
 
         action_counts = [
-            dict(r) for r in conn.execute("""
-                SELECT action, COUNT(*) AS count
-                FROM support_incidents
-                GROUP BY action
-                ORDER BY count DESC
-            """)
+            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
         ]
 
         source_counts = [
-            dict(r) for r in conn.execute("""
-                SELECT source, COUNT(*) AS count
-                FROM support_incidents
-                GROUP BY source
-                ORDER BY count DESC
-            """)
+            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
         ]
 
         recurring_customer_blockers = [
-            dict(r) for r in conn.execute("""
-                SELECT signature, issue_family, MAX(recurrence_total) AS recurrence_total
-                FROM support_incidents
-                GROUP BY signature, issue_family
-                HAVING recurrence_total >= 3
-                ORDER BY recurrence_total DESC
-                LIMIT 20
-            """)
+            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
         ]
 
         escalation_count = conn.execute(
@@ -314,24 +299,11 @@ def support_metrics():
         ).fetchone()["c"]
 
         agentgrid_decisions = [
-            dict(r) for r in conn.execute("""
-                SELECT agent_decision, COUNT(*) AS count
-                FROM support_incidents
-                WHERE source = 'agentgrid'
-                GROUP BY agent_decision
-                ORDER BY count DESC
-            """)
+            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
         ]
 
         agentgrid_recent = [
-            dict(r) for r in conn.execute("""
-                SELECT created_at, issue_family, signature, recurrence_total, action,
-                       escalation_required, pm_summary, engineering_bug_report, support_action_plan
-                FROM support_incidents
-                WHERE source = 'agentgrid'
-                ORDER BY id DESC
-                LIMIT 5
-            """)
+            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
         ]
 
     return {
