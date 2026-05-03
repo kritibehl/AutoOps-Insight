@@ -286,59 +286,48 @@ async def analyze_support_case(payload: dict):
     }
 
 
+
 @app.get("/support/metrics")
 def support_metrics():
-    with sqlite3.connect("autoops.db") as conn:
-        conn.row_factory = sqlite3.Row
+    conn = sqlite3.connect(SUPPORT_DB_PATH)
+    conn.row_factory = sqlite3.Row
 
+    # Ensure table exists before querying
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS support_incidents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT,
+        source TEXT,
+        issue_family TEXT,
+        signature TEXT,
+        agent_decision TEXT,
+        severity TEXT
+    )
+    """)
+
+    try:
         total = conn.execute("SELECT COUNT(*) AS c FROM support_incidents").fetchone()["c"]
+    except:
+        total = 0
 
-        top_issue_family = [
-            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
+    try:
+        decisions = [
+            dict(r) for r in conn.execute("""
+                SELECT agent_decision, COUNT(*) as count
+                FROM support_incidents
+                GROUP BY agent_decision
+            """)
         ]
+    except:
+        decisions = []
 
-        action_counts = [
-            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
-        ]
-
-        source_counts = [
-            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
-        ]
-
-        recurring_customer_blockers = [
-            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
-        ]
-
-        escalation_count = conn.execute(
-            "SELECT COUNT(*) AS c FROM support_incidents WHERE escalation_required = 1"
-        ).fetchone()["c"]
-
-        agentgrid_event_count = conn.execute(
-            "SELECT COUNT(*) AS c FROM support_incidents WHERE source = 'agentgrid'"
-        ).fetchone()["c"]
-
-        agentgrid_decisions = [
-            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
-        ]
-
-        agentgrid_recent = [
-            safe_fetch(conn, """SELECT * FROM support_incidents LIMIT 50""")
-        ]
+    conn.close()
 
     return {
-        "total_support_incidents": total,
-        "top_issue_family": top_issue_family,
-        "source_counts": source_counts,
-        "action_counts": action_counts,
-        "recurring_customer_blockers": recurring_customer_blockers,
-        "escalation_count": escalation_count,
-        
-        "agentgrid_events_ingested": agentgrid_event_count,
-        "agentgrid_decision_breakdown": agentgrid_decisions,
-
-        "agentgrid_decisions": agentgrid_decisions,
-        "agentgrid_recent": agentgrid_recent,
+        "agentgrid_events_ingested": total,
+        "agentgrid_decision_breakdown": decisions
     }
+
 
 
 @app.post("/support/ingest")
