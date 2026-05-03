@@ -1,8 +1,19 @@
 import sqlite3
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
 
 SUPPORT_DB_PATH = os.getenv("SUPPORT_DB_PATH", "support_incidents.db")
 
@@ -86,7 +97,7 @@ def init_support_db():
 
 
 import os
-from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi import FastAPI, Request, File, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from ml_predictor import analyze_log_text
@@ -113,13 +124,6 @@ AUTOOPS_TOKEN = os.getenv("AUTOOPS_TOKEN", "dev-token")
 
 app = FastAPI(title="AutoOps Insight")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:4174","http://localhost:4173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.on_event("startup")
@@ -421,3 +425,9 @@ def ingest_agentgrid_support_event(event: dict):
 @app.on_event("startup")
 def startup_event():
     init_support_db()
+
+
+@app.options("/{full_path:path}")
+async def preflight_handler(request: Request, full_path: str):
+    return {}
+
