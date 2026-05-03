@@ -1,9 +1,9 @@
 import sqlite3
 import os
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -11,6 +11,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 
 
@@ -98,7 +100,6 @@ def init_support_db():
 
 import os
 from fastapi import FastAPI, Request, File, Header, HTTPException, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
 
 from ml_predictor import analyze_log_text
 from schemas import (
