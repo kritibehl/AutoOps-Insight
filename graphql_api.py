@@ -109,22 +109,29 @@ class Query:
 
     @strawberry.field
     def metrics_summary(self) -> MetricsSummary:
-        summary = get_report_summary()
+        rows = get_all_analyses(limit=1000)
+
+        family_counts = Counter(str(row.get("failure_family") or "unknown") for row in rows)
+        release_blockers = sum(1 for row in rows if bool(row.get("release_blocking")))
+
         families = [
-            FailureFamilyCount(
-                failure_family=str(item.get("failure_family") or ""),
-                total_count=int(item.get("total_count") or 0),
-            )
-            for item in summary.get("top_failure_families", [])
+            FailureFamilyCount(failure_family=family, total_count=count)
+            for family, count in family_counts.most_common(10)
         ]
-        recurring = [
-            _to_recurring(item)
-            for item in summary.get("top_recurring_signatures", [])
-        ]
+
+        recurring = [_to_recurring(item) for item in get_top_recurring_signatures(limit=10)]
+
+        if release_blockers > 0:
+            release_risk = "high"
+        elif rows:
+            release_risk = "medium"
+        else:
+            release_risk = "low"
+
         return MetricsSummary(
-            total_analyses=int(summary.get("total_analyses") or 0),
-            release_blockers=int(summary.get("release_blockers") or 0),
-            release_risk=str(summary.get("release_risk") or "unknown"),
+            total_analyses=len(rows),
+            release_blockers=release_blockers,
+            release_risk=release_risk,
             top_failure_families=families,
             top_recurring_signatures=recurring,
         )
