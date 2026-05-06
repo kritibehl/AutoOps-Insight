@@ -333,3 +333,7 @@ def incident_blast_radius(incident_id: int, window_minutes: int = 60):
 app.include_router(connector_ops_router)
 
 app.include_router(graphql_router, prefix="/graphql")
+
+app.include_router(graphql_router, prefix="/graphql")
+
+app.include_router(graphql_router, prefix="/graphql")

@@ -15,7 +15,6 @@ env/
 
 # Environment files
 .env
-<<<<<<< HEAD
 .env.*
 !.env.example
 
@@ -35,6 +34,11 @@ node_modules/
 autoops-ui/node_modules/
 autoops-ui/dist/
 
+# Logs
+*.log
+api.log
+uvicorn-autoops.log
+
 # OS / editor
 .DS_Store
 .vscode/
@@ -42,8 +46,4 @@ autoops-ui/dist/
 
 # Local conflict backups
 *.conflict_backup
-=======
-
-.venv/
-.DS_Store
->>>>>>> 1f30ae5 (Ignore local virtualenv and macOS metadata)
+*.bak.*
