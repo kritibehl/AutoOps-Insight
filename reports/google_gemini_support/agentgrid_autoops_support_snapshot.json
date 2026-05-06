@@ -1,0 +1,19 @@
+{
+"integration": "AgentGrid to AutoOps",
+"purpose": "GenAI support-gate incidents routed into incident intelligence workflow",
+"support_validation_incidents": 102,
+"escalations": 51,
+"holds": 10,
+"unsafe_shipments": 0,
+"sources": 5,
+"issue_families": 6,
+"example_event": {
+"source": "agentgrid",
+"scenario": "conflicting_evidence",
+"decision": "escalate",
+"reason": "retrieved evidence conflicts across sources",
+"support_action": "route to product/support reviewer",
+"engineering_bug_report": "retrieval ranking returned inconsistent evidence"
+},
+"metric_scope": "Controlled support-validation incidents, not customer production incidents."
+}

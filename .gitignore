@@ -1,11 +1,43 @@
-.venv/
-venv/
+# Python
 __pycache__/
-*.pyc
-.DS_Store
-autoops.db
-deploy.zip
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+.venv-ci/
+venv/
+env/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Build / cache
+dist/
+build/
+.coverage
+htmlcov/
+
+# Node / frontend
+node_modules/
 autoops-ui/node_modules/
 autoops-ui/dist/
-reports/generated/
-autoops-ui/.env
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local conflict backups
+*.conflict_backup
