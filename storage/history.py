@@ -165,21 +165,39 @@ def get_top_recurring_signatures(limit: int = 10):
 
 def get_recent_analyses(limit: int = 20):
     with get_conn() as conn:
-        rows = conn.execute("""
+        columns = {
+            row[1] for row in conn.execute("PRAGMA table_info(analyses)").fetchall()
+        }
+
+        def select_expr(column: str, fallback: str) -> str:
+            if column in columns:
+                return column
+            return f"{fallback} AS {column}"
+
+        selected_columns = [
+            "id",
+            select_expr("created_at", "CURRENT_TIMESTAMP"),
+            select_expr("filename", "''"),
+            select_expr("predicted_issue", "'unknown'"),
+            select_expr("failure_family", "'unknown'"),
+            select_expr("severity", "'medium'"),
+            select_expr("signature", "'unknown'"),
+            select_expr("confidence", "0.0"),
+            select_expr("release_blocking", "0"),
+        ]
+
+        order_column = "created_at" if "created_at" in columns else "id"
+
+        rows = conn.execute(
+            f"""
             SELECT
-                id,
-                created_at,
-                filename,
-                predicted_issue,
-                failure_family,
-                severity,
-                signature,
-                confidence,
-                release_blocking
+                {", ".join(selected_columns)}
             FROM analyses
-            ORDER BY created_at DESC
+            ORDER BY {order_column} DESC
             LIMIT ?
-        """, (limit,)).fetchall()
+            """,
+            (limit,),
+        ).fetchall()
 
     return [
         {
