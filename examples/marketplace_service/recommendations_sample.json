@@ -1,0 +1,18 @@
+{
+  "player_id": "demo",
+  "recommendations": [
+    {
+      "item_id": "world_pack_001",
+      "reason": "Recommended because the player frequently chooses adventure content."
+    },
+    {
+      "item_id": "texture_pack_003",
+      "reason": "Recommended because the player has interacted with fantasy-themed content."
+    }
+  ],
+  "metrics_summary": {
+    "candidate_items": 3,
+    "returned_items": 2,
+    "ranking_strategy": "tag_overlap_demo"
+  }
+}

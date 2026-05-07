@@ -1,0 +1,29 @@
+[
+  {
+    "id": "world_pack_001",
+    "title": "Sky Fortress World",
+    "category": "world",
+    "creator": "demo_creator",
+    "price_tokens": 830,
+    "rating": 4.7,
+    "tags": ["adventure", "flying", "multiplayer"]
+  },
+  {
+    "id": "skin_pack_002",
+    "title": "Explorer Skin Pack",
+    "category": "skin",
+    "creator": "demo_creator",
+    "price_tokens": 310,
+    "rating": 4.5,
+    "tags": ["exploration", "roleplay"]
+  },
+  {
+    "id": "texture_pack_003",
+    "title": "Crystal Texture Pack",
+    "category": "texture",
+    "creator": "demo_creator",
+    "price_tokens": 490,
+    "rating": 4.4,
+    "tags": ["visual", "fantasy"]
+  }
+]
