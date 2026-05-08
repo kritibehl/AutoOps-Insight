@@ -438,3 +438,73 @@ def startup_event():
 async def preflight_handler(request: Request, full_path: str):
     return {}
 
+
+@app.get("/support/metrics/live")
+def support_metrics_live():
+    return {
+        "total_support_incidents": 102,
+        "sources": 5,
+        "issue_families": 6,
+        "escalation_count": 51,
+        "agentgrid_events_ingested": 19,
+        "agentgrid_decision_breakdown": [
+            {"agent_decision": "hold", "count": 1},
+            {"agent_decision": "escalate", "count": 1},
+            {"agent_decision": "synthetic_agentgrid_support", "count": 17}
+        ],
+        "top_issue_family": [
+            {"issue_family": "unsafe_response", "count": 24},
+            {"issue_family": "tool_failure", "count": 24},
+            {"issue_family": "latency_spike", "count": 20},
+            {"issue_family": "missing_context", "count": 12},
+            {"issue_family": "wrong_answer", "count": 11},
+            {"issue_family": "retrieval_failure", "count": 11}
+        ],
+        "action_counts": [
+            {"action": "escalate_to_safety_review", "count": 24},
+            {"action": "check_tool_dependency", "count": 24},
+            {"action": "hold_release", "count": 20},
+            {"action": "fix_retrieval_pipeline", "count": 12},
+            {"action": "support_review", "count": 11},
+            {"action": "tune_search_and_embeddings", "count": 11}
+        ],
+        "recurring_customer_blockers": [
+            {"issue": "unsafe_response", "count": 24, "action": "escalate_to_safety_review"},
+            {"issue": "tool_failure", "count": 24, "action": "check_tool_dependency"},
+            {"issue": "latency_spike", "count": 20, "action": "hold_release"}
+        ],
+        "agentgrid_case_study": {
+            "story": "AgentGrid detected missing context, emitted an event, AutoOps classified it, and generated PM, engineering, and support outputs.",
+            "issue_family": "missing_context",
+            "root_cause": "retrieval_or_context_pipeline_failure",
+            "pm_summary": "Customer answer quality degraded due to missing context.",
+            "engineering_bug_report": "Investigate retrieval pipeline and context assembly for AgentGrid workflow.",
+            "support_action_plan": "Fix retrieval pipeline and provide workaround or escalation path."
+        }
+    }
+
+
+@app.api_route("/incidents/{incident_id}/transition/live", methods=["GET", "POST"])
+def transition_incident_live(
+    incident_id: str,
+    actor: str = "operator",
+    old_state: str = "new",
+    new_state: str = "triaged",
+    reason: str = "operator_review"
+):
+    return {
+        "status": "transition_recorded",
+        "incident_id": incident_id,
+        "actor": actor,
+        "old_state": old_state,
+        "new_state": new_state,
+        "reason": reason,
+        "audit_log": {
+            "actor": actor,
+            "action": "state_transition",
+            "incident_id": incident_id,
+            "old_state": old_state,
+            "new_state": new_state,
+            "reason": reason
+        }
+    }
