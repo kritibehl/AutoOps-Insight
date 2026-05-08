@@ -57,3 +57,4 @@ bandit
 requests
 pyarrow
 kafka-python
+strawberry-graphql
