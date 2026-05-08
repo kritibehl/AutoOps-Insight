@@ -56,4 +56,3 @@ def write_audit_log(
     conn.commit()
     conn.close()
 
-init_audit_table()

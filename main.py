@@ -1,6 +1,6 @@
 
 from incident_lifecycle.state_machine import is_valid_transition
-from incident_lifecycle.audit import write_audit_log
+from incident_lifecycle.audit import write_audit_log, init_audit_table
 
 from graphql_api import graphql_router
 from connector_ops.api import router as connector_ops_router
