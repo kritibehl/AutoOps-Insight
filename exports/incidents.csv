@@ -1,0 +1,5 @@
+incident_id,issue_family,source,action,recurrence_total,severity
+INC-1001,unsafe_response,agentgrid,escalate_to_safety_review,4,high
+INC-1002,tool_failure,agentgrid,check_tool_dependency,3,high
+INC-1003,latency_spike,kubepulse,hold_release,3,medium
+INC-1004,missing_context,agentgrid,fix_retrieval_pipeline,2,medium

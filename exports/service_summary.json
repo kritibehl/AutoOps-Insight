@@ -1,0 +1,11 @@
+{
+  "top_issue_family": "unsafe_response",
+  "total_incidents": 102,
+  "escalations": 51,
+  "agentgrid_events_ingested": 19,
+  "top_sources": [
+    "kubepulse",
+    "faultline",
+    "agentgrid"
+  ]
+}

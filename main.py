@@ -1,3 +1,7 @@
+
+from incident_lifecycle.state_machine import is_valid_transition
+from incident_lifecycle.audit import write_audit_log
+
 from graphql_api import graphql_router
 from connector_ops.api import router as connector_ops_router
 from contextlib import asynccontextmanager
@@ -337,3 +341,37 @@ app.include_router(graphql_router, prefix="/graphql")
 app.include_router(graphql_router, prefix="/graphql")
 
 app.include_router(graphql_router, prefix="/graphql")
+
+
+@app.post("/incidents/{incident_id}/transition")
+def transition_incident(
+    incident_id: str,
+    actor: str,
+    old_state: str,
+    new_state: str,
+    reason: str = ""
+):
+    if not is_valid_transition(old_state, new_state):
+        return {
+            "status": "invalid_transition",
+            "incident_id": incident_id,
+            "old_state": old_state,
+            "new_state": new_state
+        }
+
+    write_audit_log(
+        actor=actor,
+        action="state_transition",
+        incident_id=incident_id,
+        old_state=old_state,
+        new_state=new_state,
+        reason=reason
+    )
+
+    return {
+        "status": "transition_recorded",
+        "incident_id": incident_id,
+        "old_state": old_state,
+        "new_state": new_state,
+        "actor": actor
+    }
