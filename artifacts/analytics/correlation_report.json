@@ -1,0 +1,40 @@
+{
+  "correlated_traces": 1,
+  "events_analyzed": 3,
+  "graph_summary": [
+    {
+      "trace_id": "trace-agentgrid-001",
+      "sources": [
+        "agentgrid",
+        "autoops",
+        "faireval"
+      ],
+      "issue_families": [
+        "missing_context",
+        "retrieval_failure",
+        "wrong_answer"
+      ],
+      "actions": [
+        "fix_retrieval_pipeline",
+        "support_review"
+      ],
+      "event_count": 3,
+      "has_escalation": false,
+      "has_release_hold": false
+    }
+  ],
+  "ranked_root_causes": [
+    {
+      "root_cause": "retrieval_or_context_pipeline_failure",
+      "score": 13
+    },
+    {
+      "root_cause": "model_reasoning_or_prompt_issue",
+      "score": 3
+    }
+  ],
+  "top_root_cause": {
+    "root_cause": "retrieval_or_context_pipeline_failure",
+    "score": 13
+  }
+}

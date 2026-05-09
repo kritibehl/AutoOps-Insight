@@ -13,3 +13,6 @@ echo "== Lifecycle Transition =="
 curl -s -X POST \
   "$AUTOOPS_URL/incidents/INC-1001/transition/live?actor=kriti&old_state=new&new_state=triaged&reason=demo_proof" \
   | python3 -m json.tool
+
+echo "== Correlation Demo =="
+curl -s "$AUTOOPS_URL/correlation/demo" | python3 -m json.tool

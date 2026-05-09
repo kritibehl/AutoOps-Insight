@@ -1,0 +1,32 @@
+[
+  {
+    "trace_id": "trace-agentgrid-001",
+    "source": "agentgrid",
+    "issue_family": "missing_context",
+    "root_cause": "retrieval_or_context_pipeline_failure",
+    "action": "fix_retrieval_pipeline",
+    "recurrence_total": 2,
+    "escalation_required": false,
+    "timestamp": "2026-05-08T20:00:00Z"
+  },
+  {
+    "trace_id": "trace-agentgrid-001",
+    "source": "autoops",
+    "issue_family": "retrieval_failure",
+    "root_cause": "retrieval_or_context_pipeline_failure",
+    "action": "support_review",
+    "recurrence_total": 3,
+    "escalation_required": true,
+    "timestamp": "2026-05-08T20:01:00Z"
+  },
+  {
+    "trace_id": "trace-agentgrid-001",
+    "source": "faireval",
+    "issue_family": "wrong_answer",
+    "root_cause": "model_reasoning_or_prompt_issue",
+    "action": "support_review",
+    "recurrence_total": 1,
+    "escalation_required": false,
+    "timestamp": "2026-05-08T20:02:00Z"
+  }
+]

@@ -552,3 +552,23 @@ def healthz_live():
             "agentgrid_events"
         ]
     }
+
+
+@app.get("/correlation/demo")
+def correlation_demo():
+    import json
+    from pathlib import Path
+    from correlation_engine.incident_graph import build_incident_graph, summarize_graph
+    from correlation_engine.root_cause_ranker import rank_root_causes
+
+    events = json.loads(Path("samples/correlation/agentgrid_autoops_trace.json").read_text())
+    graph = build_incident_graph(events)
+    ranked_causes = rank_root_causes(events)
+
+    return {
+        "correlated_traces": len(graph),
+        "events_analyzed": len(events),
+        "graph_summary": summarize_graph(graph),
+        "ranked_root_causes": ranked_causes,
+        "top_root_cause": ranked_causes[0] if ranked_causes else None,
+    }
