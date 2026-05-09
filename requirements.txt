@@ -58,3 +58,5 @@ requests
 pyarrow
 kafka-python
 strawberry-graphql
+prometheus-fastapi-instrumentator
+prometheus-client

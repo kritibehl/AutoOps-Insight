@@ -1,3 +1,7 @@
+
+from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_client import Gauge
+
 import sqlite3
 import os
 from fastapi import FastAPI, Request
@@ -129,7 +133,33 @@ from storage.history import (
 
 AUTOOPS_TOKEN = os.getenv("AUTOOPS_TOKEN", "dev-token")
 
+
+autoops_support_incidents = Gauge(
+    "autoops_support_incidents_total",
+    "Total support incidents represented in AutoOps demo metrics"
+)
+autoops_escalations = Gauge(
+    "autoops_escalations_total",
+    "Total escalation workflows represented in AutoOps demo metrics"
+)
+autoops_agentgrid_events = Gauge(
+    "autoops_agentgrid_events_ingested_total",
+    "Total AgentGrid events represented in AutoOps demo metrics"
+)
+autoops_issue_families = Gauge(
+    "autoops_issue_families_total",
+    "Total issue families represented in AutoOps demo metrics"
+)
+
+autoops_support_incidents.set(102)
+autoops_escalations.set(51)
+autoops_agentgrid_events.set(19)
+autoops_issue_families.set(6)
+
 app = FastAPI(title="AutoOps Insight")
+
+Instrumentator().instrument(app).expose(app, endpoint="/prometheus")
+
 
 
 
