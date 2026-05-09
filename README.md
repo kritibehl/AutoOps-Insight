@@ -1,3 +1,22 @@
+
+## Live Deployment
+
+AutoOps-Insight is deployed on Google Cloud Run.
+
+### Live API
+- https://autoops-api-126325674316.us-central1.run.app
+
+### Demo Endpoints
+- `/support/metrics/live`
+- `/incidents/{incident_id}/transition/live`
+
+### Cloud Deployment
+- Google Cloud Run
+- Artifact Registry
+- Cloud Build
+- FastAPI + GraphQL APIs
+
+
 # AutoOps-Insight — CI Failure Intelligence and Release Risk Reporting
 
 **AutoOps-Insight turns noisy CI failures into structured incident intelligence and release decisions.**
