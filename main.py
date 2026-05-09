@@ -508,3 +508,17 @@ def transition_incident_live(
             "reason": reason
         }
     }
+
+@app.get("/healthz/live")
+def healthz_live():
+    return {
+        "status": "ok",
+        "service": "autoops-api",
+        "deployment": "cloud-run",
+        "features": [
+            "support_metrics",
+            "incident_lifecycle",
+            "audit_logs",
+            "agentgrid_events"
+        ]
+    }
