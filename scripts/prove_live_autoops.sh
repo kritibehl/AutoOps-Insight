@@ -16,3 +16,6 @@ curl -s -X POST \
 
 echo "== Correlation Demo =="
 curl -s "$AUTOOPS_URL/correlation/demo" | python3 -m json.tool
+
+echo "== Correlation Demo =="
+curl -s "$AUTOOPS_URL/correlation/demo" | python3 -m json.tool
