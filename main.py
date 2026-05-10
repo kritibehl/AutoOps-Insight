@@ -579,3 +579,28 @@ def correlation_demo():
         "ranked_root_causes": ranked_causes,
         "top_root_cause": ranked_causes[0] if ranked_causes else None,
     }
+
+@app.post("/support/ingest/enriched")
+def ingest_support_incident_enriched(payload: dict):
+    incident = normalize_support_incident(payload)
+    issue_family = classify_issue_family(incident["issue_type"])
+    runbook_action = recommend_runbook_action(issue_family)
+    owner = probable_owner(incident["service"], issue_family)
+    path = escalation_path(incident["severity"], issue_family)
+    status_after_triage = next_status(incident["status"], incident["severity"])
+    health = summarize_service_health(incident)
+
+    return {
+        "status": "ingested",
+        **incident,
+        "issue_family": issue_family,
+        "probable_owner": owner,
+        "recommended_runbook_action": runbook_action,
+        "escalation_path": path,
+        "customer_business_impact_summary": health["customer_impact_summary"],
+        "service_health": health,
+        "status_transition": {
+            "old_status": incident["status"],
+            "new_status": status_after_triage,
+        },
+    }
