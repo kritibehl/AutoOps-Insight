@@ -1,0 +1,7 @@
+week,issue_family,incident_count,escalation_count,primary_action,stakeholder_request
+2026-W18,unsafe_response,24,24,escalate_to_safety_review,safety review and product risk summary
+2026-W18,tool_failure,24,24,check_tool_dependency,tool reliability investigation
+2026-W18,latency_spike,20,0,hold_release,release-readiness review
+2026-W18,missing_context,12,0,fix_retrieval_pipeline,retrieval quality investigation
+2026-W18,wrong_answer,11,0,support_review,response quality review
+2026-W18,retrieval_failure,11,0,tune_search_and_embeddings,search relevance review

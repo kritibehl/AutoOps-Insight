@@ -1,0 +1,39 @@
+{
+  "reporting_period": "2026-W18",
+  "total_incidents": 102,
+  "total_escalations": 51,
+  "agentgrid_events_ingested": 19,
+  "top_issue_family": "unsafe_response",
+  "top_customer_blockers": [
+    {
+      "issue_family": "unsafe_response",
+      "count": 24,
+      "action": "escalate_to_safety_review",
+      "business_impact": "requires safety review before launch readiness"
+    },
+    {
+      "issue_family": "tool_failure",
+      "count": 24,
+      "action": "check_tool_dependency",
+      "business_impact": "tool reliability investigation required"
+    },
+    {
+      "issue_family": "latency_spike",
+      "count": 20,
+      "action": "hold_release",
+      "business_impact": "release-readiness risk"
+    }
+  ],
+  "service_health": {
+    "agentgrid": "degraded",
+    "reporting-api": "watch",
+    "faireval": "watch",
+    "kubepulse": "watch"
+  },
+  "recommended_business_actions": [
+    "review unsafe_response escalation trend",
+    "prioritize tool dependency reliability checks",
+    "review latency_spike release-readiness blockers",
+    "update retrieval runbook for missing_context failures"
+  ]
+}

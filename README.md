@@ -322,3 +322,16 @@ See `docs/agentgrid_case_study.md`.
 | unsafe_response | 24 | escalate_to_safety_review |
 | tool_failure | 24 | check_tool_dependency |
 | latency_spike | 20 | hold_release |
+
+
+## SQL and Reporting Proof
+
+AutoOps includes SQL-backed reporting artifacts for business and support operations workflows:
+
+- `reports/weekly_business_review.md`
+- `reports/incident_trends.csv`
+- `reports/service_health_summary.json`
+- `sql/incident_trend_queries.sql`
+- `sql/service_health_queries.sql`
+
+These reports summarize incident trends, recurring issue families, escalation outcomes, stakeholder requests, service-health summaries, and operational metrics.
