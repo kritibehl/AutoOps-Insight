@@ -1,0 +1,19 @@
+severity_policies:
+  critical:
+    triage_minutes: 15
+    resolution_hours: 4
+    escalation_required: true
+  high:
+    triage_minutes: 30
+    resolution_hours: 8
+    escalation_required: true
+  medium:
+    triage_minutes: 60
+    resolution_hours: 24
+    escalation_required: false
+  low:
+    triage_minutes: 240
+    resolution_hours: 72
+    escalation_required: false
+
+default_owner: support_operations_team

@@ -1,0 +1,28 @@
+{
+  "reporting_period": "2026-W18",
+  "total_tickets": 4,
+  "open_tickets": 3,
+  "resolved_tickets": 1,
+  "sla_breached": 2,
+  "avg_time_to_triage_minutes": 31.75,
+  "high_priority_open": 2,
+  "top_services": [
+    {
+      "service": "agentgrid",
+      "open_tickets": 2,
+      "sla_breached": 2,
+      "recommended_next_action": "service owner escalation and dependency review"
+    },
+    {
+      "service": "reporting-api",
+      "open_tickets": 1,
+      "sla_breached": 0,
+      "recommended_next_action": "monitor dependency latency and update customer"
+    }
+  ],
+  "recurring_issue_families": [
+    "tool_failure",
+    "unsafe_response",
+    "latency_or_timeout"
+  ]
+}

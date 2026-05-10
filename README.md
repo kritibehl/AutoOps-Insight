@@ -335,3 +335,16 @@ AutoOps includes SQL-backed reporting artifacts for business and support operati
 - `sql/service_health_queries.sql`
 
 These reports summarize incident trends, recurring issue families, escalation outcomes, stakeholder requests, service-health summaries, and operational metrics.
+
+
+## SLA and Ticket Lifecycle Reporting
+
+AutoOps includes SLA-aware ticket lifecycle artifacts for support operations workflows:
+
+- `support_sla/sla_policy.yaml`
+- `support_sla/ticket_lifecycle_report.md`
+- `support_sla/escalation_age_report.csv`
+- `support_sla/support_backlog_summary.json`
+- `support_sla/recurring_issue_root_cause.md`
+
+The live API exposes `/support/sla/summary` with ticket ownership, SLA breach status, time-to-triage, escalation count, service owner, and recommended next action.

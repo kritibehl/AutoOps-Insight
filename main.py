@@ -681,3 +681,79 @@ def escalate_incident_protected(
             "executed_by": role
         }
     }
+
+
+@app.get("/support/sla/summary")
+def support_sla_summary():
+    return {
+        "reporting_period": "2026-W18",
+        "total_tickets": 4,
+        "open_tickets": 3,
+        "resolved_tickets": 1,
+        "sla_breached": 2,
+        "avg_time_to_triage_minutes": 31.75,
+        "high_priority_open": 2,
+        "tickets": [
+            {
+                "ticket_id": "TCK-1001",
+                "service": "reporting-api",
+                "severity": "medium",
+                "created_at": "2026-05-10T10:00:00Z",
+                "status": "triaged",
+                "owner": "reporting_platform_team",
+                "sla_due_at": "2026-05-11T10:00:00Z",
+                "sla_breached": False,
+                "time_to_triage_minutes": 42,
+                "time_to_resolution_hours": None,
+                "escalation_count": 1,
+                "recommended_next_action": "monitor dependency latency and update customer"
+            },
+            {
+                "ticket_id": "TCK-1002",
+                "service": "agentgrid",
+                "severity": "high",
+                "created_at": "2026-05-10T08:30:00Z",
+                "status": "escalated",
+                "owner": "platform_runtime_team",
+                "sla_due_at": "2026-05-10T16:30:00Z",
+                "sla_breached": True,
+                "time_to_triage_minutes": 25,
+                "time_to_resolution_hours": None,
+                "escalation_count": 2,
+                "recommended_next_action": "engineering escalation for tool dependency failure"
+            },
+            {
+                "ticket_id": "TCK-1003",
+                "service": "agentgrid",
+                "severity": "critical",
+                "created_at": "2026-05-10T07:00:00Z",
+                "status": "escalated",
+                "owner": "safety_review_team",
+                "sla_due_at": "2026-05-10T11:00:00Z",
+                "sla_breached": True,
+                "time_to_triage_minutes": 10,
+                "time_to_resolution_hours": None,
+                "escalation_count": 3,
+                "recommended_next_action": "safety owner review before release"
+            },
+            {
+                "ticket_id": "TCK-1004",
+                "service": "faireval",
+                "severity": "medium",
+                "created_at": "2026-05-10T09:15:00Z",
+                "status": "resolved",
+                "owner": "evaluation_platform_team",
+                "sla_due_at": "2026-05-11T09:15:00Z",
+                "sla_breached": False,
+                "time_to_triage_minutes": 50,
+                "time_to_resolution_hours": 5,
+                "escalation_count": 0,
+                "recommended_next_action": "document regression pattern and close"
+            }
+        ],
+        "recurring_issue_families": [
+            "tool_failure",
+            "unsafe_response",
+            "latency_or_timeout"
+        ]
+    }

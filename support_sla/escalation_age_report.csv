@@ -1,0 +1,5 @@
+ticket_id,service,severity,created_at,status,owner,sla_due_at,sla_breached,time_to_triage_minutes,time_to_resolution_hours,escalation_count,recommended_next_action
+TCK-1001,reporting-api,medium,2026-05-10T10:00:00Z,triaged,reporting_platform_team,2026-05-11T10:00:00Z,false,42,,1,monitor dependency latency and update customer
+TCK-1002,agentgrid,high,2026-05-10T08:30:00Z,escalated,platform_runtime_team,2026-05-10T16:30:00Z,true,25,,2,engineering escalation for tool dependency failure
+TCK-1003,agentgrid,critical,2026-05-10T07:00:00Z,escalated,safety_review_team,2026-05-10T11:00:00Z,true,10,,3,safety owner review before release
+TCK-1004,faireval,medium,2026-05-10T09:15:00Z,resolved,evaluation_platform_team,2026-05-11T09:15:00Z,false,50,5,0,document regression pattern and close
