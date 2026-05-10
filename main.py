@@ -1,4 +1,11 @@
 
+from support_automation.incident_ingestion import normalize_support_incident
+from support_automation.runbook_recommender import classify_issue_family, recommend_runbook_action
+from support_automation.service_health_summary import summarize_service_health
+from support_automation.escalation_router import probable_owner, escalation_path
+from support_automation.ticket_lifecycle import next_status
+
+
 from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Gauge
 
