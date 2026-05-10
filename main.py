@@ -604,3 +604,80 @@ def ingest_support_incident_enriched(payload: dict):
             "new_status": status_after_triage,
         },
     }
+
+from fastapi import Depends
+from auth.api_key_auth import get_role, require_permission
+from auth.access_audit import write_access_audit
+
+@app.post("/support/ingest/protected")
+def ingest_support_incident_protected(payload: dict, role: str = Depends(get_role)):
+    require_permission(role, "ingest")
+    audit = write_access_audit(role, "/support/ingest/protected", "ingest", True)
+
+    incident = normalize_support_incident(payload)
+    issue_family = classify_issue_family(incident["issue_type"])
+    runbook_action = recommend_runbook_action(issue_family)
+    owner = probable_owner(incident["service"], issue_family)
+    path = escalation_path(incident["severity"], issue_family)
+    status_after_triage = next_status(incident["status"], incident["severity"])
+    health = summarize_service_health(incident)
+
+    return {
+        "status": "ingested",
+        "role": role,
+        "access_audit": audit,
+        **incident,
+        "issue_family": issue_family,
+        "probable_owner": owner,
+        "recommended_runbook_action": runbook_action,
+        "escalation_path": path,
+        "customer_business_impact_summary": health["customer_impact_summary"],
+        "service_health": health,
+        "status_transition": {
+            "old_status": incident["status"],
+            "new_status": status_after_triage,
+        },
+    }
+
+@app.get("/reports/service-health/protected")
+def service_health_report_protected(role: str = Depends(get_role)):
+    require_permission(role, "read_reports")
+    audit = write_access_audit(role, "/reports/service-health/protected", "read_reports", True)
+
+    return {
+        "role": role,
+        "access_audit": audit,
+        "report": {
+            "total_incidents": 102,
+            "total_escalations": 51,
+            "agentgrid_events_ingested": 19,
+            "top_issue_family": "unsafe_response",
+            "service_health": {
+                "agentgrid": "degraded",
+                "reporting-api": "watch",
+                "faireval": "watch",
+                "kubepulse": "watch"
+            }
+        }
+    }
+
+@app.post("/incidents/{incident_id}/escalate/protected")
+def escalate_incident_protected(
+    incident_id: str,
+    reason: str = "service_owner_review",
+    role: str = Depends(get_role)
+):
+    require_permission(role, "escalate")
+    audit = write_access_audit(role, "/incidents/escalate/protected", "escalate", True)
+
+    return {
+        "status": "escalated",
+        "incident_id": incident_id,
+        "role": role,
+        "reason": reason,
+        "access_audit": audit,
+        "escalation_control": {
+            "allowed_roles": ["service_owner", "admin"],
+            "executed_by": role
+        }
+    }

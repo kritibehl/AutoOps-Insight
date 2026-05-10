@@ -60,3 +60,7 @@ kafka-python
 strawberry-graphql
 prometheus-fastapi-instrumentator
 prometheus-client
+
+sqlalchemy
+psycopg2-binary
+alembic
