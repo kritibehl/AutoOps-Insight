@@ -1,0 +1,48 @@
+{
+  "incident_id": "RCA-DEP-1002",
+  "linked_deployment": {
+    "deployment_id": "DEP-1002",
+    "service": "agentgrid",
+    "version": "v1.8.0",
+    "deployed_at": "2026-05-10T07:45:00Z",
+    "change_type": "tool_routing_change",
+    "owner": "platform_runtime_team"
+  },
+  "impacted_services": [
+    "agentgrid",
+    "support_workflow",
+    "tool_routing"
+  ],
+  "timeline": [
+    {
+      "timestamp": "2026-05-10T07:45:00Z",
+      "event": "Deployment DEP-1002 completed for agentgrid v1.8.0"
+    },
+    {
+      "timestamp": "2026-05-10T08:05:00Z",
+      "event": "Tool-failure incident INC-2003 detected 20 minutes after deployment"
+    },
+    {
+      "timestamp": "2026-05-10T08:20:00Z",
+      "event": "Unsafe-response incident INC-2004 detected 35 minutes after deployment"
+    },
+    {
+      "timestamp": "2026-05-10T08:25:00Z",
+      "event": "AutoOps marked release as high risk and rollback candidate"
+    },
+    {
+      "timestamp": "2026-05-10T08:30:00Z",
+      "event": "Service owner escalation routed to platform_runtime_team"
+    }
+  ],
+  "probable_cause": "tool routing change introduced failures in AgentGrid support workflow and increased unsafe-response risk shortly after deployment",
+  "rollback_candidate": true,
+  "release_risk": "high",
+  "next_actions": [
+    "review DEP-1002 tool routing diff",
+    "hold release until tool-failure and unsafe-response patterns are resolved",
+    "route to platform_runtime_team for service-owner review",
+    "add regression coverage for tool routing and unsafe-response paths",
+    "update support runbook with rollback criteria"
+  ]
+}

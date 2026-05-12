@@ -823,3 +823,20 @@ def release_correlation_demo():
         "summary": summary,
         "correlations": correlations,
     }
+
+
+@app.get("/rca/demo")
+def rca_demo():
+    import json
+    from pathlib import Path
+
+    data = json.loads(Path("rca/escalation_chain.json").read_text())
+    return {
+        "incident_id": data["incident_id"],
+        "probable_cause": data["probable_cause"],
+        "impacted_services": data["impacted_services"],
+        "timeline": data["timeline"],
+        "rollback_candidate": data["rollback_candidate"],
+        "release_risk": data["release_risk"],
+        "next_actions": data["next_actions"],
+    }
