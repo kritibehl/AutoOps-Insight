@@ -1,0 +1,31 @@
+{
+  "reporting_period": "2026-W18",
+  "deployments_analyzed": 2,
+  "rollback_candidates": 2,
+  "highest_risk_services": [
+    {
+      "deployment_id": "DEP-1002",
+      "service": "agentgrid",
+      "release_risk": "high",
+      "incident_spike": 2,
+      "severity_points": 10,
+      "rollback_candidate": true,
+      "risk_reason": "tool_failure and unsafe_response incidents appeared within 90 minutes of deployment"
+    },
+    {
+      "deployment_id": "DEP-1001",
+      "service": "reporting-api",
+      "release_risk": "medium",
+      "incident_spike": 2,
+      "severity_points": 6,
+      "rollback_candidate": true,
+      "risk_reason": "latency_or_timeout incidents appeared within 90 minutes of backend release"
+    }
+  ],
+  "recommended_actions": [
+    "review rollback criteria for high-risk deployments",
+    "compare deployment timestamp with incident spike",
+    "notify affected service owner",
+    "hold release if post-deploy incident spike exceeds threshold"
+  ]
+}

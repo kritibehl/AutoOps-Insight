@@ -1,0 +1,31 @@
+{
+  "roles": {
+    "support_l1": {
+      "permissions": ["ingest", "read_reports"],
+      "can_escalate": false,
+      "can_resolve": false
+    },
+    "service_owner": {
+      "permissions": ["ingest", "read_reports", "escalate", "suppress", "resolve"],
+      "can_escalate": true,
+      "can_resolve": true
+    },
+    "admin": {
+      "permissions": ["ingest", "read_reports", "escalate", "suppress", "resolve", "admin"],
+      "can_escalate": true,
+      "can_resolve": true
+    }
+  },
+  "protected_endpoints": [
+    "/support/ingest/protected",
+    "/reports/service-health/protected",
+    "/incidents/{incident_id}/escalate/protected"
+  ],
+  "audit_fields": [
+    "timestamp",
+    "role",
+    "endpoint",
+    "action",
+    "allowed"
+  ]
+}

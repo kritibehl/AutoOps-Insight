@@ -1,0 +1,33 @@
+{
+  "sla_breach_examples": [
+    {
+      "ticket_id": "TCK-1002",
+      "service": "agentgrid",
+      "severity": "high",
+      "owner": "platform_runtime_team",
+      "status": "escalated",
+      "sla_due_at": "2026-05-10T16:30:00Z",
+      "sla_breached": true,
+      "time_to_triage_minutes": 25,
+      "escalation_count": 2,
+      "recommended_next_action": "engineering escalation for tool dependency failure"
+    },
+    {
+      "ticket_id": "TCK-1003",
+      "service": "agentgrid",
+      "severity": "critical",
+      "owner": "safety_review_team",
+      "status": "escalated",
+      "sla_due_at": "2026-05-10T11:00:00Z",
+      "sla_breached": true,
+      "time_to_triage_minutes": 10,
+      "escalation_count": 3,
+      "recommended_next_action": "safety owner review before release"
+    }
+  ],
+  "summary": {
+    "total_breaches": 2,
+    "highest_risk_service": "agentgrid",
+    "primary_breach_reason": "high-severity support blockers remained escalated beyond SLA deadline"
+  }
+}

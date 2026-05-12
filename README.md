@@ -348,3 +348,21 @@ AutoOps includes SLA-aware ticket lifecycle artifacts for support operations wor
 - `support_sla/recurring_issue_root_cause.md`
 
 The live API exposes `/support/sla/summary` with ticket ownership, SLA breach status, time-to-triage, escalation count, service owner, and recommended next action.
+
+
+## Final Ops Polish: RBAC, SLA Breaches, and Release Risk
+
+AutoOps includes final operational-platform artifacts for:
+
+- RBAC-style role matrix and escalation permissions
+- SLA breach examples and escalation deadlines
+- deployment-to-incident rollback risk summaries
+- change-failure dashboard artifact
+
+Artifacts:
+- `auth/role_matrix.md`
+- `auth/escalation_permissions.json`
+- `sla/sla_breach_examples.json`
+- `sla/escalation_deadlines.md`
+- `release_analytics/rollback_risk_summary.json`
+- `release_analytics/deploy_vs_incident_dashboard.png`
