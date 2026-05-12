@@ -19,3 +19,6 @@ curl -s "$AUTOOPS_URL/correlation/demo" | python3 -m json.tool
 
 echo "== Correlation Demo =="
 curl -s "$AUTOOPS_URL/correlation/demo" | python3 -m json.tool
+
+echo "== Deployment-to-Incident Correlation =="
+curl -s "$AUTOOPS_URL/release-correlation/demo" | python3 -m json.tool

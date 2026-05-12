@@ -1,4 +1,7 @@
 
+from release_correlation.deployment_correlation import correlate_deployments_to_incidents, summarize_release_risk
+
+
 from incident_search.search_service import search_incidents, service_owner_summary
 
 
@@ -803,3 +806,20 @@ def incident_timeline(incident_id: str):
                 "current_status": item["status"],
             }
     return {"error": "incident_not_found", "incident_id": incident_id}
+
+
+@app.get("/release-correlation/demo")
+def release_correlation_demo():
+    import json
+    from pathlib import Path
+
+    deployments = json.loads(Path("samples/release_correlation/deployments.json").read_text())
+    incidents = json.loads(Path("samples/release_correlation/incidents_after_deploy.json").read_text())
+
+    correlations = correlate_deployments_to_incidents(deployments, incidents)
+    summary = summarize_release_risk(correlations)
+
+    return {
+        "summary": summary,
+        "correlations": correlations,
+    }

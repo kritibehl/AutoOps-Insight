@@ -1,0 +1,18 @@
+[
+  {
+    "deployment_id": "DEP-1001",
+    "service": "reporting-api",
+    "version": "v2.4.1",
+    "deployed_at": "2026-05-10T09:30:00Z",
+    "change_type": "backend_release",
+    "owner": "reporting_platform_team"
+  },
+  {
+    "deployment_id": "DEP-1002",
+    "service": "agentgrid",
+    "version": "v1.8.0",
+    "deployed_at": "2026-05-10T07:45:00Z",
+    "change_type": "tool_routing_change",
+    "owner": "platform_runtime_team"
+  }
+]
