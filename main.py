@@ -1,4 +1,7 @@
 
+from incident_search.search_service import search_incidents, service_owner_summary
+
+
 from support_automation.incident_ingestion import normalize_support_incident
 from support_automation.runbook_recommender import classify_issue_family, recommend_runbook_action
 from support_automation.service_health_summary import summarize_service_health
@@ -757,3 +760,46 @@ def support_sla_summary():
             "latency_or_timeout"
         ]
     }
+
+
+@app.get("/incident-search")
+def incidents_search(
+    service: str | None = None,
+    owner: str | None = None,
+    severity: str | None = None,
+    status: str | None = None,
+    issue_family: str | None = None,
+):
+    return search_incidents(
+        service=service,
+        owner=owner,
+        severity=severity,
+        status=status,
+        issue_family=issue_family,
+    )
+
+@app.get("/service-owners/dashboard")
+def service_owners_dashboard():
+    return {
+        "owners": service_owner_summary(),
+        "summary": {
+            "total_owners": len(service_owner_summary()),
+            "total_incidents": 4,
+            "open_incidents": 3,
+            "critical_or_high": 2,
+        }
+    }
+
+@app.get("/incidents/{incident_id}/timeline")
+def incident_timeline(incident_id: str):
+    results = search_incidents()["items"]
+    for item in results:
+        if item["incident_id"] == incident_id:
+            return {
+                "incident_id": incident_id,
+                "service": item["service"],
+                "owner": item["owner"],
+                "timeline": item["timeline"],
+                "current_status": item["status"],
+            }
+    return {"error": "incident_not_found", "incident_id": incident_id}

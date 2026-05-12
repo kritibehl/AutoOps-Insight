@@ -4,7 +4,7 @@ from main import app
 client = TestClient(app)
 
 def test_incident_search_filters_by_service():
-    r = client.get("/incidents/search", params={"service": "agentgrid"})
+    r = client.get("/incident-search", params={"service": "agentgrid"})
     assert r.status_code == 200
     data = r.json()
     assert data["count"] == 2

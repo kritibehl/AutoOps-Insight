@@ -20,7 +20,7 @@ export default function IncidentSearch() {
       if (v) params.set(k, v);
     });
 
-    const res = await fetch(`${API_BASE}/incidents/search?${params.toString()}`);
+    const res = await fetch(`${API_BASE}/incident-search?${params.toString()}`);
     setData(await res.json());
 
     const ownerRes = await fetch(`${API_BASE}/service-owners/dashboard`);

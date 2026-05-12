@@ -4,7 +4,7 @@ AutoOps includes a dashboard-facing incident search workflow for operational sup
 
 ## API endpoints
 
-- `GET /incidents/search`
+- `GET /incident-search`
 - `GET /service-owners/dashboard`
 - `GET /incidents/{incident_id}/timeline`
 
