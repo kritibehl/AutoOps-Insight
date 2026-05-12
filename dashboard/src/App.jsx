@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "./index.css";
+import IncidentSearch from "./IncidentSearch";
 import SupportMetrics from "./SupportMetrics";
 
 const API_BASE = "http://127.0.0.1:8001";
@@ -37,6 +38,7 @@ function Section({ title, children }) {
 
 
 export default function Router() {
+  if (window.location.pathname === "/incidents") { return <IncidentSearch />; }
   if (window.location.pathname === "/support") {
     return <SupportMetrics />;
   }
