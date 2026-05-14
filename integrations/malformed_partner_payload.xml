@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<partner_event>
+  <partner_id>partner_analytics_042</partner_id>
+  <event_type>reporting_api_timeout</event_type>
+  <response_latency_ms>not_a_number</response_latency_ms>
+</partner_event>

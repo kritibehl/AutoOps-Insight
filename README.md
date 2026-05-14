@@ -377,3 +377,15 @@ AutoOps includes partner-facing support and integration review documentation:
 - `docs/support_requirements_matrix.md`
 
 These artifacts demonstrate integration troubleshooting, operational evidence review, workaround guidance, escalation workflows, and support-documentation updates.
+
+
+## Partner XML Payload Validation
+
+AutoOps includes a partner-integration XML validation example:
+
+- `integrations/sample_partner_payload.xml`
+- `integrations/parse_partner_payload.py`
+- `integrations/xml_validation_report.md`
+- `integrations/partner_payload_validation_summary.json`
+
+The parser extracts partner ID, deployment ID, event type, response latency, and retry count, then flags missing or invalid fields that could affect support routing and release-correlation workflows.

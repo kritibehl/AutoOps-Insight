@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<partner_event>
+  <partner_id>partner_analytics_042</partner_id>
+  <deployment_id>DEP-1001</deployment_id>
+  <event_type>reporting_api_timeout</event_type>
+  <response_latency_ms>4200</response_latency_ms>
+  <retry_count>3</retry_count>
+  <affected_workflow>partner_analytics_export</affected_workflow>
+  <customer_impact>dashboard refresh delayed</customer_impact>
+</partner_event>
