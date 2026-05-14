@@ -43,8 +43,11 @@ def parse_partner_payload(path: str):
             except ValueError:
                 errors.append(f"invalid_integer_field:{numeric_field}")
 
-    latency = int(extracted["response_latency_ms"]) if extracted.get("response_latency_ms", "").isdigit() else None
-    retries = int(extracted["retry_count"]) if extracted.get("retry_count", "").isdigit() else None
+    latency_value = extracted.get("response_latency_ms") or ""
+    retry_value = extracted.get("retry_count") or ""
+
+    latency = int(latency_value) if latency_value.isdigit() else None
+    retries = int(retry_value) if retry_value.isdigit() else None
 
     support_routing = "normal_review"
     if latency is not None and latency > 3000:
