@@ -366,3 +366,14 @@ Artifacts:
 - `sla/escalation_deadlines.md`
 - `release_analytics/rollback_risk_summary.json`
 - `release_analytics/deploy_vs_incident_dashboard.png`
+
+
+## Integration Review and Partner Support Artifacts
+
+AutoOps includes partner-facing support and integration review documentation:
+
+- `docs/integration_issue_review.md`
+- `docs/partner_workflow_summary.md`
+- `docs/support_requirements_matrix.md`
+
+These artifacts demonstrate integration troubleshooting, operational evidence review, workaround guidance, escalation workflows, and support-documentation updates.
