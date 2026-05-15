@@ -25,3 +25,9 @@ curl -s "$AUTOOPS_URL/release-correlation/demo" | python3 -m json.tool
 
 echo "== RCA Generator Demo =="
 curl -s "$AUTOOPS_URL/rca/demo" | python3 -m json.tool
+
+echo "== Responsible AI Monitoring Summary =="
+curl -s "$AUTOOPS_URL/rai/monitoring/summary" | python3 -m json.tool
+
+echo "== Responsible AI Incident Detail =="
+curl -s "$AUTOOPS_URL/rai/incidents/RAI-rai-eval-2026-05-15" | python3 -m json.tool

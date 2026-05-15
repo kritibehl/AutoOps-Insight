@@ -1,0 +1,19 @@
+{
+  "required_fields": [
+    "evaluation_run_id",
+    "source_service",
+    "release_decision",
+    "safety_regressions",
+    "false_allows",
+    "risk_categories",
+    "recommended_mitigation"
+  ],
+  "normalized_fields": [
+    "incident_type",
+    "severity",
+    "release_impact",
+    "review_required",
+    "risk_family",
+    "source_run_id"
+  ]
+}

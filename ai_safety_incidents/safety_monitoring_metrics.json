@@ -1,0 +1,21 @@
+{
+  "total_safety_events": 3,
+  "release_blocks": 2,
+  "human_review_escalations": 2,
+  "false_allow_incidents": 2,
+  "risk_category_distribution": {
+    "sensitive_data_exposure_risk": 2,
+    "policy_bypass_attempt": 2
+  },
+  "top_recurring_risk_families": [
+    {
+      "risk_family": "sensitive_data_exposure_risk",
+      "count": 2
+    },
+    {
+      "risk_family": "policy_bypass_attempt",
+      "count": 2
+    }
+  ],
+  "average_safety_regressions_per_run": 4.0
+}

@@ -1,0 +1,12 @@
+{
+  "evaluation_run_id": "rai-eval-2026-05-15",
+  "source_service": "FairEval",
+  "release_decision": "block",
+  "safety_regressions": 6,
+  "false_allows": 6,
+  "risk_categories": [
+    "sensitive_data_exposure_risk",
+    "policy_bypass_attempt"
+  ],
+  "recommended_mitigation": "block_release"
+}

@@ -840,3 +840,27 @@ def rca_demo():
         "release_risk": data["release_risk"],
         "next_actions": data["next_actions"],
     }
+
+
+@app.get("/rai/monitoring/summary")
+def rai_monitoring_summary():
+    import json
+    from pathlib import Path
+
+    metrics = json.loads(Path("rai_monitoring/rai_monitoring_metrics.json").read_text())
+    return metrics
+
+@app.get("/rai/incidents/{incident_id}")
+def rai_incident_detail(incident_id: str):
+    import json
+    from pathlib import Path
+
+    incident = json.loads(Path("ai_safety_incidents/responsible_ai_incident_summary.json").read_text())
+    if incident.get("incident_id") == incident_id:
+        return incident
+
+    return {
+        "error": "incident_not_found",
+        "incident_id": incident_id,
+        "available_incident_id": incident.get("incident_id")
+    }

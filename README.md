@@ -389,3 +389,21 @@ AutoOps includes a partner-integration XML validation example:
 - `integrations/partner_payload_validation_summary.json`
 
 The parser extracts partner ID, deployment ID, event type, response latency, and retry count, then flags missing or invalid fields that could affect support routing and release-correlation workflows.
+
+
+## Responsible AI Incident Monitoring
+
+AutoOps includes Responsible AI monitoring artifacts that convert FairEval safety-regression outputs into operational incidents.
+
+Artifacts:
+- `rai_monitoring/ingest_rai_safety_event.py`
+- `rai_monitoring/rai_monitoring_metrics.json`
+- `rai_monitoring/rai_risk_trend_report.md`
+- `ai_safety_incidents/responsible_ai_incident_summary.md`
+- `ai_safety_incidents/safety_monitoring_metrics.json`
+
+Live endpoints:
+- `/rai/monitoring/summary`
+- `/rai/incidents/{incident_id}`
+
+These workflows normalize safety-regression events into severity-ranked incidents, release-impact flags, human-review indicators, release-block recommendations, and recurring risk-family metrics.

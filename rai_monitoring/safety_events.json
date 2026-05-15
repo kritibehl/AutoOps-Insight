@@ -1,0 +1,23 @@
+[
+  {
+    "evaluation_run_id": "rai-eval-2026-05-15",
+    "release_decision": "block",
+    "safety_regressions": 6,
+    "false_allows": 6,
+    "risk_categories": ["sensitive_data_exposure_risk", "policy_bypass_attempt"]
+  },
+  {
+    "evaluation_run_id": "rai-eval-2026-05-14",
+    "release_decision": "block",
+    "safety_regressions": 4,
+    "false_allows": 3,
+    "risk_categories": ["policy_bypass_attempt"]
+  },
+  {
+    "evaluation_run_id": "rai-eval-2026-05-13",
+    "release_decision": "review",
+    "safety_regressions": 2,
+    "false_allows": 0,
+    "risk_categories": ["sensitive_data_exposure_risk"]
+  }
+]
