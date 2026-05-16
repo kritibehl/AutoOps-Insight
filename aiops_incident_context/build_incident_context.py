@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 
+
 def has_timeout_pattern(logs):
     return any("timeout" in line.lower() for line in logs)
+
 
 def find_historical_matches(bundle, historical):
     matches = []
@@ -24,10 +26,10 @@ def find_historical_matches(bundle, historical):
 
     return matches
 
+
 def build_root_cause_hypotheses(bundle):
     signals = bundle["signals"]
     logs = bundle.get("logs", [])
-
     evidence = []
 
     if signals.get("retry_spike"):
@@ -45,20 +47,18 @@ def build_root_cause_hypotheses(bundle):
     cause = "payment dependency timeout cascade" if has_timeout_pattern(logs) else "post-deploy service regression"
     confidence = "high" if len(evidence) >= 3 else "medium"
 
-    return [
-        {
-            "cause": cause,
-            "confidence": confidence,
-            "evidence": evidence
-        }
-    ]
+    return [{
+        "cause": cause,
+        "confidence": confidence,
+        "evidence": evidence
+    }]
+
 
 def build_triage_summary(bundle):
     service = bundle["service"]
     deploy = bundle["signals"].get("recent_deploy", "recent deployment")
     latency = bundle["signals"].get("p95_latency_delta_pct")
     error_rate = bundle["signals"].get("error_rate_delta_pct")
-
     readable_service = service.replace("-", " ").title()
 
     return (
@@ -66,6 +66,7 @@ def build_triage_summary(bundle):
         f"with retries concentrated around payment dependency timeouts. "
         f"Observed p95 latency delta: {latency}%, error-rate delta: {error_rate}%."
     )
+
 
 def recommended_actions(bundle):
     deploy = bundle["signals"].get("recent_deploy", "recent release")
@@ -78,6 +79,7 @@ def recommended_actions(bundle):
         "notify service owner and incident commander for sev1 review"
     ]
 
+
 def build_context(bundle, historical):
     return {
         "incident_id": bundle["incident_id"],
@@ -89,17 +91,13 @@ def build_context(bundle, historical):
         "recommended_next_actions": recommended_actions(bundle),
     }
 
-def main():
-    bundle = json.loads(Path("aiops_incident_context/sample_telemetry_bundle.json").read_text())
-    historical = json.loads(Path("aiops_incident_context/historical_incident_store.json").read_text())
 
-    context = build_context(bundle, historical)
+def build_report(context):
+    hypotheses = json.dumps(context["probable_root_cause_hypotheses"], indent=2)
+    historical = json.dumps(context["historical_context"], indent=2)
+    actions = "\n".join(f"- {action}" for action in context["recommended_next_actions"])
 
-    Path("aiops_incident_context/incident_context_summary.json").write_text(
-        json.dumps(context, indent=2)
-    )
-
-    report = f"""# AIOps Incident Context Report
+    return f"""# AIOps Incident Context Report
 
 ## Incident
 
@@ -119,21 +117,38 @@ def main():
 
 ## Probable root-cause hypotheses
 
-```json
-{json.dumps(context["probable_root_cause_hypotheses"], indent=2)}
-Historical context
-{json.dumps(context["historical_context"], indent=2)}
-Recommended next actions
+{hypotheses}
 
-{chr(10).join(f"- {action}" for action in context["recommended_next_actions"])}
+## Historical context
 
-Operational value
+{historical}
+
+## Recommended next actions
+
+{actions}
+
+## Operational value
 
 This workflow synthesizes telemetry signals, logs, recent deployment metadata, and historical incident patterns into a triage-ready context packet for incident management workflows.
 """
 
-Path("aiops_incident_context/incident_context_report.md").write_text(report)
-print(json.dumps(context, indent=2))
 
-if name == "main":
-main()
+def main():
+    bundle = json.loads(Path("aiops_incident_context/sample_telemetry_bundle.json").read_text())
+    historical = json.loads(Path("aiops_incident_context/historical_incident_store.json").read_text())
+
+    context = build_context(bundle, historical)
+
+    Path("aiops_incident_context/incident_context_summary.json").write_text(
+        json.dumps(context, indent=2)
+    )
+
+    Path("aiops_incident_context/incident_context_report.md").write_text(
+        build_report(context)
+    )
+
+    print(json.dumps(context, indent=2))
+
+
+if __name__ == "__main__":
+    main()

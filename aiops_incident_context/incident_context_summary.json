@@ -1,0 +1,32 @@
+{
+  "incident_id": "INC-204",
+  "service": "checkout-api",
+  "severity": "sev1",
+  "triage_summary": "Checkout Api latency and error rates spiked after release-204, with retries concentrated around payment dependency timeouts. Observed p95 latency delta: 212%, error-rate delta: 8.4%.",
+  "probable_root_cause_hypotheses": [
+    {
+      "cause": "payment dependency timeout cascade",
+      "confidence": "high",
+      "evidence": [
+        "retry spike",
+        "timeout log cluster",
+        "p95 latency increase",
+        "error rate increase"
+      ]
+    }
+  ],
+  "historical_context": [
+    {
+      "matched_incident": "INC-137",
+      "similarity_reason": "same service, retry spike, upstream timeout pattern",
+      "previous_resolution": "rollback candidate release and dependency timeout mitigation"
+    }
+  ],
+  "recommended_next_actions": [
+    "check dependency saturation",
+    "compare against release-204",
+    "review retry budget and rollback candidate",
+    "inspect payment dependency timeout/error dashboards",
+    "notify service owner and incident commander for sev1 review"
+  ]
+}
