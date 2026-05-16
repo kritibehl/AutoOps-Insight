@@ -407,3 +407,17 @@ Live endpoints:
 - `/rai/incidents/{incident_id}`
 
 These workflows normalize safety-regression events into severity-ranked incidents, release-impact flags, human-review indicators, release-block recommendations, and recurring risk-family metrics.
+
+
+## AIOps Service Readiness and Infrastructure Output Validation
+
+AutoOps includes service-readiness and deployment-output validation artifacts:
+
+- `aiops_service_readiness/benchmark_incident_context_api.py`
+- `aiops_service_readiness/incident_context_benchmark_summary.json`
+- `aiops_service_readiness/incident_context_service_readiness_report.md`
+- `infra/terraform/cloud_run_autoops/deployment_output_validation.py`
+- `infra/terraform/cloud_run_autoops/sample_deployment_output.json`
+- `infra/terraform/cloud_run_autoops/deployment_output_validation_report.md`
+
+These workflows benchmark the live AIOps incident-context API and validate Terraform/Cloud Run deployment outputs for required service metadata, health endpoint documentation, environment configuration, and deployment-readiness signals.

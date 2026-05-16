@@ -1,0 +1,15 @@
+{
+  "validation_status": "PASS",
+  "required_outputs_present": 7,
+  "missing_outputs": [],
+  "resilience_checks_passed": [
+    "health_endpoint_documented",
+    "environment_variables_declared",
+    "deployment_url_exposed",
+    "deployment_status_readable",
+    "ingress_mode_documented",
+    "service_account_variable_present"
+  ],
+  "resilience_checks_failed": [],
+  "deployment_status_readable": true
+}

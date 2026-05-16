@@ -1,0 +1,12 @@
+{
+  "project_id": "gen-lang-client-0025654873",
+  "region": "us-central1",
+  "service_name": "autoops-api",
+  "service_url": "https://autoops-api-126325674316.us-central1.run.app",
+  "health_endpoint": "/healthz/live",
+  "required_environment_variables": ["AUTOOPS_TOKEN"],
+  "deployment_status": "serving",
+  "ingress_mode": "INGRESS_TRAFFIC_ALL",
+  "service_account_variable_present": true,
+  "minimum_instance_setting_documented": false
+}
