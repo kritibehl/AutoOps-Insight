@@ -1,0 +1,24 @@
+[
+  {
+    "incident_id": "INC-137",
+    "service": "checkout-api",
+    "signals": {
+      "retry_spike": true,
+      "dependency": "payment",
+      "timeout_pattern": true
+    },
+    "summary": "Checkout API experienced payment dependency timeouts and retry amplification after release rollout.",
+    "previous_resolution": "rollback candidate release and dependency timeout mitigation"
+  },
+  {
+    "incident_id": "INC-088",
+    "service": "search-api",
+    "signals": {
+      "retry_spike": false,
+      "dependency": "indexing",
+      "timeout_pattern": true
+    },
+    "summary": "Search API latency increased during indexing backlog.",
+    "previous_resolution": "throttled indexing jobs and increased worker capacity"
+  }
+]

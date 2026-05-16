@@ -864,3 +864,11 @@ def rai_incident_detail(incident_id: str):
         "incident_id": incident_id,
         "available_incident_id": incident.get("incident_id")
     }
+
+
+@app.get("/aiops/incident-context/demo")
+def aiops_incident_context_demo():
+    import json
+    from pathlib import Path
+
+    return json.loads(Path("aiops_incident_context/incident_context_summary.json").read_text())

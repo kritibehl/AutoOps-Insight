@@ -1,0 +1,15 @@
+{
+  "incident_id": "INC-204",
+  "service": "checkout-api",
+  "severity": "sev1",
+  "signals": {
+    "p95_latency_delta_pct": 212,
+    "error_rate_delta_pct": 8.4,
+    "retry_spike": true,
+    "recent_deploy": "release-204"
+  },
+  "logs": [
+    "upstream timeout in payment dependency",
+    "retry budget exceeded"
+  ]
+}
