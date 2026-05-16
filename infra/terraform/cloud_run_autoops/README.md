@@ -31,6 +31,8 @@ terraform plan \
   -var="service_account_email=SERVICE_ACCOUNT@YOUR_PROJECT.iam.gserviceaccount.com"
 
 terraform apply
+Health check
+curl "$(terraform output -raw service_url)/healthz/live"
 Purpose
 
 This provides repeatable serverless deployment documentation for AutoOps reliability tooling infrastructure.
