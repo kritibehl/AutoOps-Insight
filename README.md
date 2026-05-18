@@ -421,3 +421,20 @@ AutoOps includes service-readiness and deployment-output validation artifacts:
 - `infra/terraform/cloud_run_autoops/deployment_output_validation_report.md`
 
 These workflows benchmark the live AIOps incident-context API and validate Terraform/Cloud Run deployment outputs for required service metadata, health endpoint documentation, environment configuration, and deployment-readiness signals.
+
+
+## Event-Driven Incident Ingestion
+
+AutoOps includes an event-driven incident ingestion workflow with validation, retry tracking, and dead-letter queue handling.
+
+Artifacts:
+- `event_ingestion/sample_incident_events.jsonl`
+- `event_ingestion/process_incident_events.py`
+- `event_ingestion/incident_ingestion_summary.json`
+- `event_ingestion/dead_letter_queue.json`
+- `event_ingestion/incident_ingestion_report.md`
+
+Live/API workflow:
+- `/events/ingestion/summary`
+
+This models async incident ingestion patterns used in AIOps, SRE, platform support, and reliability tooling.

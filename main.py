@@ -872,3 +872,10 @@ def aiops_incident_context_demo():
     from pathlib import Path
 
     return json.loads(Path("aiops_incident_context/incident_context_summary.json").read_text())
+
+
+@app.get("/events/ingestion/summary")
+def event_ingestion_summary():
+    import json
+    from pathlib import Path
+    return json.loads(Path("event_ingestion/incident_ingestion_summary.json").read_text())

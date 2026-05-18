@@ -1,0 +1,13 @@
+[
+  {
+    "event": {
+      "event_id": "evt-004",
+      "source": "bad-source",
+      "severity": "sev2",
+      "issue_family": "missing_service",
+      "action": "triage"
+    },
+    "error": "missing_required_fields:['service']",
+    "attempts": 3
+  }
+]

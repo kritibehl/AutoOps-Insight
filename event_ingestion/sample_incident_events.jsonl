@@ -1,0 +1,4 @@
+{"event_id":"evt-001","source":"agentgrid","service":"checkout-api","severity":"sev1","issue_family":"latency_spike","action":"triage"}
+{"event_id":"evt-002","source":"faireval","service":"rai-gate","severity":"sev1","issue_family":"unsafe_response","action":"block_release"}
+{"event_id":"evt-003","source":"kubepulse","service":"release-gate","severity":"sev2","issue_family":"rollback_risk","action":"hold_release"}
+{"event_id":"evt-004","source":"bad-source","severity":"sev2","issue_family":"missing_service","action":"triage"}

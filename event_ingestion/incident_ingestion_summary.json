@@ -1,0 +1,64 @@
+{
+  "events_received": 4,
+  "events_processed": 3,
+  "retry_attempts": 2,
+  "dead_lettered_events": 1,
+  "processed_events": [
+    {
+      "event_id": "evt-001",
+      "status": "processed",
+      "service": "checkout-api",
+      "severity": "sev1",
+      "issue_family": "latency_spike",
+      "recommended_queue": "sev1_escalation",
+      "action": "triage",
+      "attempts": 1
+    },
+    {
+      "event_id": "evt-002",
+      "status": "processed",
+      "service": "rai-gate",
+      "severity": "sev1",
+      "issue_family": "unsafe_response",
+      "recommended_queue": "sev1_escalation",
+      "action": "block_release",
+      "attempts": 1
+    },
+    {
+      "event_id": "evt-003",
+      "status": "processed",
+      "service": "release-gate",
+      "severity": "sev2",
+      "issue_family": "rollback_risk",
+      "recommended_queue": "standard_triage",
+      "action": "hold_release",
+      "attempts": 1
+    }
+  ],
+  "retry_queue": [
+    {
+      "event_id": "evt-004",
+      "attempt": 1,
+      "error": "missing_required_fields:['service']"
+    },
+    {
+      "event_id": "evt-004",
+      "attempt": 2,
+      "error": "missing_required_fields:['service']"
+    }
+  ],
+  "dead_letter_queue": [
+    {
+      "event": {
+        "event_id": "evt-004",
+        "source": "bad-source",
+        "severity": "sev2",
+        "issue_family": "missing_service",
+        "action": "triage"
+      },
+      "error": "missing_required_fields:['service']",
+      "attempts": 3
+    }
+  ],
+  "pipeline_status": "PASS"
+}
