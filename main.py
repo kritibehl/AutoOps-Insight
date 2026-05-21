@@ -879,3 +879,10 @@ def event_ingestion_summary():
     import json
     from pathlib import Path
     return json.loads(Path("event_ingestion/incident_ingestion_summary.json").read_text())
+
+
+@app.get("/field-patterns/summary")
+def field_patterns_summary():
+    import json
+    from pathlib import Path
+    return json.loads(Path("field_patterns/recurring_rag_failure_patterns.json").read_text())

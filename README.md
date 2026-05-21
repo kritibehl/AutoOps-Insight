@@ -438,3 +438,22 @@ Live/API workflow:
 - `/events/ingestion/summary`
 
 This models async incident ingestion patterns used in AIOps, SRE, platform support, and reliability tooling.
+
+
+## Field Feedback and Customer-Friction Intelligence
+
+AutoOps includes field-feedback artifacts that convert recurring GenAI failures into reusable incident patterns, customer blocker summaries, and product feedback.
+
+Artifacts:
+- `genai_incidents/recurring_genai_failures.json`
+- `field_patterns/summarize_field_patterns.py`
+- `field_patterns/recurring_rag_failure_patterns.json`
+- `field_patterns/field_pattern_summary.md`
+- `product_feedback/customer_blocker_summary.md`
+- `product_feedback/feature_request_summary.md`
+- `product_feedback/field_to_product_feedback_template.md`
+
+Live/API workflow:
+- `/field-patterns/summary`
+
+This supports identifying recurring field patterns, customer friction points, support blockers, and engineering-facing product recommendations.

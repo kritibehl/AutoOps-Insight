@@ -1,0 +1,38 @@
+[
+  {
+    "incident_id": "GENAI-001",
+    "customer_segment": "partner_analytics",
+    "failure_family": "rag_missing_context",
+    "symptom": "answer omitted partner-specific reporting constraint",
+    "customer_blocker": "partner could not complete analytics export validation",
+    "source": "AgentGrid",
+    "recommended_action": "expand retrieval context and add missing-context eval case"
+  },
+  {
+    "incident_id": "GENAI-002",
+    "customer_segment": "support_ops",
+    "failure_family": "tool_call_failure",
+    "symptom": "support workflow failed after external tool timeout",
+    "customer_blocker": "support case required manual escalation",
+    "source": "AutoOps",
+    "recommended_action": "add retry/backoff handling and tool health checks"
+  },
+  {
+    "incident_id": "GENAI-003",
+    "customer_segment": "release_review",
+    "failure_family": "unsafe_response",
+    "symptom": "candidate answer bypassed safety gate",
+    "customer_blocker": "release blocked pending safety review",
+    "source": "FairEval",
+    "recommended_action": "tighten safety regression gate and require human review"
+  },
+  {
+    "incident_id": "GENAI-004",
+    "customer_segment": "partner_analytics",
+    "failure_family": "rag_missing_context",
+    "symptom": "retrieval missed deployment-specific troubleshooting note",
+    "customer_blocker": "partner support could not identify workaround",
+    "source": "AgentGrid",
+    "recommended_action": "index deployment correlation docs and add retrieval-hit monitoring"
+  }
+]
