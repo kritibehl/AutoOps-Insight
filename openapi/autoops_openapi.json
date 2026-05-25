@@ -1,0 +1,40 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AutoOps Incident Automation API",
+    "version": "1.0.0",
+    "description": "AIOps incident automation API with event ingestion, DLQ, incident lifecycle, search, and escalation workflows."
+  },
+  "paths": {
+    "/events/ingest": {
+      "post": {
+        "summary": "Ingest incident event"
+      }
+    },
+    "/events/process-next": {
+      "post": {
+        "summary": "Process next incident event"
+      }
+    },
+    "/events/dlq": {
+      "get": {
+        "summary": "List dead-lettered incident events"
+      }
+    },
+    "/incidents": {
+      "post": {
+        "summary": "Create incident"
+      }
+    },
+    "/incidents/search": {
+      "get": {
+        "summary": "Search incidents"
+      }
+    },
+    "/incidents/{incident_id}/transition": {
+      "post": {
+        "summary": "Transition incident lifecycle state"
+      }
+    }
+  }
+}
