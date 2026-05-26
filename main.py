@@ -886,3 +886,10 @@ def field_patterns_summary():
     import json
     from pathlib import Path
     return json.loads(Path("field_patterns/recurring_rag_failure_patterns.json").read_text())
+
+
+@app.get("/incident-runbooks/demo")
+def incident_runbook_demo():
+    import json
+    from pathlib import Path
+    return json.loads(Path("incident_runbooks/incident_response_package.json").read_text())

@@ -1,0 +1,36 @@
+{
+  "incident_id": "INC-PROD-901",
+  "service": "checkout-api",
+  "severity": "sev1",
+  "deployment_id": "release-204",
+  "service_health": {
+    "status": "degraded",
+    "p95_latency_delta_pct": 212,
+    "error_rate_delta_pct": 8.4,
+    "retry_spike": true
+  },
+  "events": [
+    {
+      "timestamp": "2026-05-16T14:00:00Z",
+      "event": "release-204 deployed to checkout-api"
+    },
+    {
+      "timestamp": "2026-05-16T14:07:00Z",
+      "event": "p95 latency increased by 212%"
+    },
+    {
+      "timestamp": "2026-05-16T14:09:00Z",
+      "event": "retry budget exceeded"
+    },
+    {
+      "timestamp": "2026-05-16T14:12:00Z",
+      "event": "payment dependency timeout cluster detected"
+    }
+  ],
+  "logs": [
+    "upstream timeout in payment dependency",
+    "retry budget exceeded",
+    "checkout-api p95 latency spike after release-204"
+  ],
+  "customer_impact": "checkout requests delayed or failing for partner traffic"
+}

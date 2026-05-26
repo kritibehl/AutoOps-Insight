@@ -457,3 +457,19 @@ Live/API workflow:
 - `/field-patterns/summary`
 
 This supports identifying recurring field patterns, customer friction points, support blockers, and engineering-facing product recommendations.
+
+
+## Production Incident Runbook Automation
+
+AutoOps includes incident-response automation that generates production review artifacts from service-health evidence, logs, deployment context, and incident timelines.
+
+Artifacts:
+- `incident_runbooks/sample_production_incident.json`
+- `incident_runbooks/generate_runbook_package.py`
+- `incident_runbooks/incident_response_package.json`
+- `incident_runbooks/post_incident_review_template.md`
+
+Live/API workflow:
+- `/incident-runbooks/demo`
+
+This workflow produces incident timelines, rollback candidates, AI-assisted runbook summaries, post-incident review templates, and follow-up actions for production review.
