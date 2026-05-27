@@ -893,3 +893,15 @@ def incident_runbook_demo():
     import json
     from pathlib import Path
     return json.loads(Path("incident_runbooks/incident_response_package.json").read_text())
+
+
+@app.get("/streaming/incident-analytics/summary")
+def streaming_incident_analytics_summary():
+    import json
+    from pathlib import Path
+
+    return json.loads(
+        Path(
+            "streaming_analytics/stream_window_metrics.json"
+        ).read_text()
+    )
