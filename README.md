@@ -473,3 +473,20 @@ Live/API workflow:
 - `/incident-runbooks/demo`
 
 This workflow produces incident timelines, rollback candidates, AI-assisted runbook summaries, post-incident review templates, and follow-up actions for production review.
+
+
+## Streaming Incident Analytics and Cassandra-Style Event Design
+
+AutoOps includes streaming-style incident analytics and Cassandra-style telemetry schema design.
+
+Artifacts:
+- `streaming_analytics/incident_stream_processor.py`
+- `streaming_analytics/stream_window_metrics.json`
+- `streaming_analytics/rolling_failure_analysis.md`
+- `cassandra_design/cassandra_event_schema.cql`
+- `cassandra_design/telemetry_partitioning.md`
+
+Live/API workflow:
+- `/streaming/incident-analytics/summary`
+
+These workflows model rolling-window failure analysis, incident spike detection, escalation burst tracking, moving averages, and high-volume telemetry partitioning design.

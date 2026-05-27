@@ -1,0 +1,223 @@
+{
+  "events_processed": 8,
+  "window_size": 3,
+  "spike_windows_detected": 6,
+  "escalation_bursts_detected": 6,
+  "top_services": {
+    "checkout-api": 5,
+    "payment-api": 2,
+    "search-api": 1
+  },
+  "top_issue_families": {
+    "latency_spike": 5,
+    "dependency_timeout": 2,
+    "tool_failure": 1
+  },
+  "window_metrics": [
+    {
+      "window_index": 0,
+      "window_size": 1,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 0,
+      "escalation_count": 0,
+      "moving_avg_escalations": 0.0,
+      "spike_detected": false
+    },
+    {
+      "window_index": 1,
+      "window_size": 2,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 1,
+      "escalation_count": 1,
+      "moving_avg_escalations": 0.5,
+      "spike_detected": false
+    },
+    {
+      "window_index": 2,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 3,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 4,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 5,
+      "window_size": 3,
+      "dominant_service": "payment-api",
+      "dominant_issue_family": "dependency_timeout",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 6,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 7,
+      "window_size": 3,
+      "dominant_service": "payment-api",
+      "dominant_issue_family": "dependency_timeout",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    }
+  ],
+  "spike_windows": [
+    {
+      "window_index": 2,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 3,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 4,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 5,
+      "window_size": 3,
+      "dominant_service": "payment-api",
+      "dominant_issue_family": "dependency_timeout",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 6,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 7,
+      "window_size": 3,
+      "dominant_service": "payment-api",
+      "dominant_issue_family": "dependency_timeout",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    }
+  ],
+  "escalation_bursts": [
+    {
+      "window_index": 2,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 3,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 4,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 5,
+      "window_size": 3,
+      "dominant_service": "payment-api",
+      "dominant_issue_family": "dependency_timeout",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 6,
+      "window_size": 3,
+      "dominant_service": "checkout-api",
+      "dominant_issue_family": "latency_spike",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    },
+    {
+      "window_index": 7,
+      "window_size": 3,
+      "dominant_service": "payment-api",
+      "dominant_issue_family": "dependency_timeout",
+      "sev1_count": 2,
+      "escalation_count": 2,
+      "moving_avg_escalations": 0.67,
+      "spike_detected": true
+    }
+  ],
+  "stream_status": "PASS"
+}
