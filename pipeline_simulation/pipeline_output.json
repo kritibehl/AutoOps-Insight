@@ -1,0 +1,142 @@
+{
+  "pipeline_status": "PASS",
+  "stages": [
+    {
+      "stage": "ingest",
+      "records_received": 4,
+      "records_valid": 4,
+      "records": [
+        {
+          "event_id": "evt-001",
+          "service": "checkout-api",
+          "region": "us-west",
+          "latency_ms": 4200,
+          "error_rate": 8.4,
+          "event_type": "latency_spike"
+        },
+        {
+          "event_id": "evt-002",
+          "service": "checkout-api",
+          "region": "us-west",
+          "latency_ms": 3900,
+          "error_rate": 7.1,
+          "event_type": "retry_spike"
+        },
+        {
+          "event_id": "evt-003",
+          "service": "payment-api",
+          "region": "us-west",
+          "latency_ms": 3100,
+          "error_rate": 5.5,
+          "event_type": "dependency_timeout"
+        },
+        {
+          "event_id": "evt-004",
+          "service": "search-api",
+          "region": "us-east",
+          "latency_ms": 180,
+          "error_rate": 0.2,
+          "event_type": "normal"
+        }
+      ]
+    },
+    {
+      "stage": "aggregate",
+      "group_by": [
+        "service"
+      ],
+      "rows": [
+        {
+          "service": "checkout-api",
+          "event_count": 2,
+          "avg_latency_ms": 4050,
+          "avg_error_rate": 7.75
+        },
+        {
+          "service": "payment-api",
+          "event_count": 1,
+          "avg_latency_ms": 3100,
+          "avg_error_rate": 5.5
+        },
+        {
+          "service": "search-api",
+          "event_count": 1,
+          "avg_latency_ms": 180,
+          "avg_error_rate": 0.2
+        }
+      ]
+    },
+    {
+      "stage": "warehouse",
+      "target_tables": [
+        "fact_operational_event",
+        "fact_service_health_daily",
+        "dim_service",
+        "dim_region"
+      ],
+      "warehouse_rows_ready": 3,
+      "rows": [
+        {
+          "service": "checkout-api",
+          "event_count": 2,
+          "avg_latency_ms": 4050,
+          "avg_error_rate": 7.75
+        },
+        {
+          "service": "payment-api",
+          "event_count": 1,
+          "avg_latency_ms": 3100,
+          "avg_error_rate": 5.5
+        },
+        {
+          "service": "search-api",
+          "event_count": 1,
+          "avg_latency_ms": 180,
+          "avg_error_rate": 0.2
+        }
+      ]
+    },
+    {
+      "stage": "anomaly_detection",
+      "anomaly_count": 2,
+      "anomalies": [
+        {
+          "service": "checkout-api",
+          "event_count": 2,
+          "avg_latency_ms": 4050,
+          "avg_error_rate": 7.75,
+          "anomaly_reason": "latency_or_error_rate_threshold"
+        },
+        {
+          "service": "payment-api",
+          "event_count": 1,
+          "avg_latency_ms": 3100,
+          "avg_error_rate": 5.5,
+          "anomaly_reason": "latency_or_error_rate_threshold"
+        }
+      ]
+    },
+    {
+      "stage": "dashboard",
+      "dashboard_tiles": [
+        "service_health_summary",
+        "regional_latency_trends",
+        "anomaly_count",
+        "top_impacted_services"
+      ],
+      "services_visible": [
+        "checkout-api",
+        "payment-api",
+        "search-api"
+      ],
+      "anomaly_count": 2
+    }
+  ],
+  "summary": {
+    "records_received": 4,
+    "records_valid": 4,
+    "warehouse_rows_ready": 3,
+    "anomaly_count": 2,
+    "dashboard_tiles": 4
+  }
+}

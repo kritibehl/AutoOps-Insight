@@ -490,3 +490,23 @@ Live/API workflow:
 - `/streaming/incident-analytics/summary`
 
 These workflows model rolling-window failure analysis, incident spike detection, escalation burst tracking, moving averages, and high-volume telemetry partitioning design.
+
+
+## Distributed Analytics Pipeline Simulation
+
+AutoOps includes a compact end-to-end analytics pipeline simulation for operational telemetry.
+
+Artifacts:
+- `pipeline_simulation/run_pipeline_simulation.py`
+- `pipeline_simulation/pipeline_output.json`
+- `pipeline_simulation/pipeline_report.md`
+- `pipeline_simulation/end_to_end_pipeline_diagram.md`
+
+Stages:
+- ingest
+- aggregate
+- warehouse
+- anomaly detection
+- dashboard
+
+This supports Apple Data Engineer / monitoring-data positioning by showing telemetry ingestion, service-level aggregation, warehouse-ready outputs, anomaly detection, and dashboard-facing monitoring summaries.
