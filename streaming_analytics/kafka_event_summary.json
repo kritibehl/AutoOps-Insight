@@ -1,0 +1,45 @@
+{
+  "events_ingested": 4,
+  "service_counts": {
+    "checkout-api": 2,
+    "payment-api": 1,
+    "search-api": 1
+  },
+  "event_type_counts": {
+    "latency_spike": 1,
+    "retry_spike": 1,
+    "dependency_timeout": 1,
+    "normal": 1
+  },
+  "anomaly_count": 3,
+  "anomalies": [
+    {
+      "event_id": "k-001",
+      "service": "checkout-api",
+      "event_type": "latency_spike",
+      "latency_ms": 4200,
+      "error_rate": 8.4,
+      "region": "us-west",
+      "timestamp": "2026-05-16T14:00:00Z"
+    },
+    {
+      "event_id": "k-002",
+      "service": "checkout-api",
+      "event_type": "retry_spike",
+      "latency_ms": 3900,
+      "error_rate": 7.1,
+      "region": "us-west",
+      "timestamp": "2026-05-16T14:01:00Z"
+    },
+    {
+      "event_id": "k-003",
+      "service": "payment-api",
+      "event_type": "dependency_timeout",
+      "latency_ms": 3100,
+      "error_rate": 5.5,
+      "region": "us-west",
+      "timestamp": "2026-05-16T14:02:00Z"
+    }
+  ],
+  "stream_status": "PASS"
+}

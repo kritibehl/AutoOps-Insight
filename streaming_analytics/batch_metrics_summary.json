@@ -1,0 +1,27 @@
+{
+  "batch_rows": 3,
+  "aggregations": [
+    {
+      "service": "checkout-api",
+      "event_count": 2,
+      "avg_latency_ms": 4050,
+      "avg_error_rate": 7.75,
+      "anomaly_events": 2
+    },
+    {
+      "service": "payment-api",
+      "event_count": 1,
+      "avg_latency_ms": 3100,
+      "avg_error_rate": 5.5,
+      "anomaly_events": 1
+    },
+    {
+      "service": "search-api",
+      "event_count": 1,
+      "avg_latency_ms": 180,
+      "avg_error_rate": 0.2,
+      "anomaly_events": 0
+    }
+  ],
+  "batch_status": "PASS"
+}
