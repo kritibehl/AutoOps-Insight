@@ -526,3 +526,15 @@ Live/API workflow:
 - `/ml-monitoring/model-health`
 
 This supports ML monitoring, AI service quality, data-platform support, and operational model-health review.
+
+
+## Trino-Style Distributed Query Layer
+
+AutoOps includes Trino-style distributed query examples over warehouse-ready operational telemetry outputs.
+
+Artifacts:
+- `query_analytics/trino_style_query_examples.sql`
+- `query_analytics/distributed_query_notes.md`
+- `query_analytics/dashboard_query_patterns.md`
+
+These examples cover service-health summaries, regional latency trends, anomaly drilldowns, service-owner dashboards, and operational monitoring query patterns.
