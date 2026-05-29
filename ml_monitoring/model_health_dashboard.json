@@ -1,0 +1,55 @@
+{
+  "models_monitored": 3,
+  "healthy_models": 1,
+  "degraded_models": 2,
+  "feature_drift_alerts": 2,
+  "quality_regressions": 2,
+  "latency_regressions": 2,
+  "model_evaluations": [
+    {
+      "model": "support-priority-classifier",
+      "model_health": "degraded",
+      "baseline_accuracy": 0.91,
+      "current_accuracy": 0.84,
+      "accuracy_drop": 0.07,
+      "feature_drift_detected": true,
+      "drifted_features": [
+        "ticket_length",
+        "customer_region"
+      ],
+      "quality_regression": true,
+      "latency_regression": true,
+      "latency_increase_pct": 0.4444,
+      "recommended_action": "review training data and recent production traffic distribution"
+    },
+    {
+      "model": "incident-routing-model",
+      "model_health": "healthy",
+      "baseline_accuracy": 0.88,
+      "current_accuracy": 0.87,
+      "accuracy_drop": 0.01,
+      "feature_drift_detected": false,
+      "drifted_features": [],
+      "quality_regression": false,
+      "latency_regression": false,
+      "latency_increase_pct": 0.1071,
+      "recommended_action": "continue monitoring"
+    },
+    {
+      "model": "runbook-recommendation-model",
+      "model_health": "degraded",
+      "baseline_accuracy": 0.86,
+      "current_accuracy": 0.79,
+      "accuracy_drop": 0.07,
+      "feature_drift_detected": true,
+      "drifted_features": [
+        "incident_family"
+      ],
+      "quality_regression": true,
+      "latency_regression": true,
+      "latency_increase_pct": 0.8571,
+      "recommended_action": "review training data and recent production traffic distribution"
+    }
+  ],
+  "monitoring_status": "REVIEW"
+}

@@ -1,0 +1,8 @@
+{
+  "models_monitored": 3,
+  "healthy_models": 1,
+  "degraded_models": 2,
+  "quality_regressions": 2,
+  "latency_regressions": 2,
+  "feature_drift_alerts": 2
+}

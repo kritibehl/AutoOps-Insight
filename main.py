@@ -905,3 +905,11 @@ def streaming_incident_analytics_summary():
             "streaming_analytics/stream_window_metrics.json"
         ).read_text()
     )
+
+
+@app.get("/ml-monitoring/model-health")
+def ml_monitoring_model_health():
+    import json
+    from pathlib import Path
+
+    return json.loads(Path("ml_monitoring/model_health_dashboard.json").read_text())

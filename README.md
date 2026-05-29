@@ -510,3 +510,19 @@ Stages:
 - dashboard
 
 This supports Apple Data Engineer / monitoring-data positioning by showing telemetry ingestion, service-level aggregation, warehouse-ready outputs, anomaly detection, and dashboard-facing monitoring summaries.
+
+
+## ML Monitoring Workflows
+
+AutoOps includes ML monitoring workflows that track feature drift, prediction-quality regression, latency regression, anomaly patterns, and dashboard-ready model-health metrics.
+
+Artifacts:
+- `ml_monitoring/anomaly_detection_pipeline.py`
+- `ml_monitoring/feature_drift_report.md`
+- `ml_monitoring/prediction_quality_metrics.json`
+- `ml_monitoring/model_health_dashboard.json`
+
+Live/API workflow:
+- `/ml-monitoring/model-health`
+
+This supports ML monitoring, AI service quality, data-platform support, and operational model-health review.
