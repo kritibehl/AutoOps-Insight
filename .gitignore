@@ -26,3 +26,4 @@ autoops.db
 # Local runtime artifacts
 support_incidents.db
 artifacts/audit/
+ai_safety_incidents/responsible_ai_incident_summary.json
