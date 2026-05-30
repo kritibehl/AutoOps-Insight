@@ -22,3 +22,7 @@ uvicorn-autoops.log
 *.bak.*
 sample_dns.log
 autoops.db
+
+# Local runtime artifacts
+support_incidents.db
+artifacts/audit/
