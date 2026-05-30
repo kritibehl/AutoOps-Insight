@@ -538,3 +538,15 @@ Artifacts:
 - `query_analytics/dashboard_query_patterns.md`
 
 These examples cover service-health summaries, regional latency trends, anomaly drilldowns, service-owner dashboards, and operational monitoring query patterns.
+
+
+## ML Release Governance
+
+AutoOps includes ML release-monitoring artifacts that model canary rollout, model-health monitoring, regression detection, rollback decisioning, and human-review routing.
+
+Artifacts:
+- `model_release_governance/canary_model_rollout.md`
+- `model_release_governance/rollback_decision.json`
+- `model_release_governance/model_degradation_report.md`
+
+This workflow shows deploy → monitor → detect regression → rollback for operational ML support workflows.
