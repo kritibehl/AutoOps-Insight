@@ -50,11 +50,37 @@ def analyze_trends(history):
         "increase_pct": top["increase_pct"],
         "increase": top["increase_label"],
         "trend_status": "investigate" if top["increase_pct"] and top["increase_pct"] >= 25 else "monitor",
-        "recommended_action": "review retry-budget policies and dependency-health monitoring"
-        if top["incident_family"] == "retry_storm"
-        else "review service-health trends and escalation triggers",
+        "recommended_action": (
+            "review retry-budget policies and dependency-health monitoring"
+            if top["incident_family"] == "retry_storm"
+            else "review service-health trends and escalation triggers"
+        ),
         "family_trends": family_trends,
     }
+
+
+def build_report(summary):
+    family_trends_json = json.dumps(summary["family_trends"], indent=2)
+
+    return (
+        "# Incident Trend Analytics\n\n"
+        "## Top recurring incident family\n\n"
+        f"{summary['top_incident_family']}\n\n"
+        "## Trend\n\n"
+        f"{summary['previous_count']} -> {summary['latest_count']} incidents\n\n"
+        "## Increase\n\n"
+        f"{summary['increase']}\n\n"
+        "## Status\n\n"
+        f"{summary['trend_status']}\n\n"
+        "## Recommended action\n\n"
+        f"{summary['recommended_action']}\n\n"
+        "## All family trends\n\n"
+        f"{family_trends_json}\n\n"
+        "## Operational value\n\n"
+        "This workflow identifies recurring incident families, month-over-month "
+        "growth rates, risk signals, and recommended remediation actions for "
+        "support and reliability workflows.\n"
+    )
 
 
 def main():
@@ -65,39 +91,12 @@ def main():
         json.dumps(summary, indent=2)
     )
 
-    report = f"""# Incident Trend Analytics
+    Path("incident_trends/incident_trend_report.md").write_text(
+        build_report(summary)
+    )
 
-## Top recurring incident family
+    print(json.dumps(summary, indent=2))
 
-{summary["top_incident_family"]}
 
-## Trend
-
-{summary["previous_count"]} -> {summary["latest_count"]} incidents
-
-## Increase
-
-{summary["increase"]}
-
-## Status
-
-{summary["trend_status"]}
-
-## Recommended action
-
-{summary["recommended_action"]}
-
-## All family trends
-
-```json
-{json.dumps(summary["family_trends"], indent=2)}
-Operational value
-
-This workflow identifies recurring incident families, month-over-month growth rates, risk signals, and recommended remediation actions for support and reliability workflows.
-"""
-
-Path("incident_trends/incident_trend_report.md").write_text(report)
-print(json.dumps(summary, indent=2))
-
-if name == "main":
-main()
+if __name__ == "__main__":
+    main()
