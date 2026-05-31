@@ -568,3 +568,16 @@ Artifacts:
 - `runbook_quality/runbook_gap_report.md`
 
 These workflows convert incident timelines, alerts, service-health evidence, and runbook outcomes into review-ready operational artifacts.
+
+
+## Incident Trend Analytics
+
+AutoOps includes incident-trend analytics for recurring operational failure families.
+
+Artifacts:
+- `incident_trends/incident_history.json`
+- `incident_trends/analyze_incident_trends.py`
+- `incident_trends/incident_trend_summary.json`
+- `incident_trends/incident_trend_report.md`
+
+This workflow identifies top recurring incident families, month-over-month growth rates, trend status, and recommended remediation actions for support/SRE operations.

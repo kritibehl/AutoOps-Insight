@@ -1,0 +1,13 @@
+[
+  {"month": "Jan", "incident_family": "retry_storm", "count": 16},
+  {"month": "Feb", "incident_family": "retry_storm", "count": 21},
+  {"month": "Mar", "incident_family": "retry_storm", "count": 28},
+
+  {"month": "Jan", "incident_family": "dependency_timeout", "count": 12},
+  {"month": "Feb", "incident_family": "dependency_timeout", "count": 14},
+  {"month": "Mar", "incident_family": "dependency_timeout", "count": 15},
+
+  {"month": "Jan", "incident_family": "latency_spike", "count": 10},
+  {"month": "Feb", "incident_family": "latency_spike", "count": 11},
+  {"month": "Mar", "incident_family": "latency_spike", "count": 13}
+]
