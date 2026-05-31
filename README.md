@@ -550,3 +550,21 @@ Artifacts:
 - `model_release_governance/model_degradation_report.md`
 
 This workflow shows deploy → monitor → detect regression → rollback for operational ML support workflows.
+
+
+## SRE Operations Automation
+
+AutoOps includes SRE-style incident operations workflows for postmortems, alert correlation, and runbook-quality analytics.
+
+Artifacts:
+- `postmortem/timeline_builder.py`
+- `postmortem/action_item_tracker.py`
+- `postmortem/postmortem_template.md`
+- `alert_correlation/correlate_alerts.py`
+- `alert_correlation/alert_families.json`
+- `alert_correlation/reports/alert_correlation_report.md`
+- `runbook_quality/runbook_success_rate.py`
+- `runbook_quality/unresolved_steps.json`
+- `runbook_quality/runbook_gap_report.md`
+
+These workflows convert incident timelines, alerts, service-health evidence, and runbook outcomes into review-ready operational artifacts.

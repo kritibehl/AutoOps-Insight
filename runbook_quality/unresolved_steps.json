@@ -1,0 +1,30 @@
+[
+  {
+    "incident_id": "INC-PROD-901",
+    "runbook": "checkout-api-latency",
+    "step": "check dependency timeout dashboard",
+    "resolved": true,
+    "escalated": false
+  },
+  {
+    "incident_id": "INC-PROD-901",
+    "runbook": "checkout-api-latency",
+    "step": "validate retry-budget exhaustion",
+    "resolved": true,
+    "escalated": false
+  },
+  {
+    "incident_id": "INC-PROD-901",
+    "runbook": "checkout-api-latency",
+    "step": "identify rollback criteria",
+    "resolved": false,
+    "escalated": true
+  },
+  {
+    "incident_id": "INC-PROD-902",
+    "runbook": "payment-dependency-timeout",
+    "step": "confirm dependency owner",
+    "resolved": false,
+    "escalated": true
+  }
+]

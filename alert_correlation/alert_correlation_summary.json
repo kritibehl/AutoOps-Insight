@@ -1,0 +1,39 @@
+{
+  "alerts_received": 4,
+  "incident_families_detected": 2,
+  "families": [
+    {
+      "incident_family": "service_degradation",
+      "alert_count": 3,
+      "services": [
+        "checkout-api",
+        "payment-api"
+      ],
+      "severities": [
+        "sev1",
+        "sev2"
+      ],
+      "alert_types": [
+        "dependency_failure",
+        "latency_spike",
+        "retry_storm"
+      ],
+      "recommended_review": "open sev1 incident review"
+    },
+    {
+      "incident_family": "incident_escalation",
+      "alert_count": 1,
+      "services": [
+        "checkout-api"
+      ],
+      "severities": [
+        "sev1"
+      ],
+      "alert_types": [
+        "escalation_burst"
+      ],
+      "recommended_review": "monitor"
+    }
+  ],
+  "correlation_status": "PASS"
+}

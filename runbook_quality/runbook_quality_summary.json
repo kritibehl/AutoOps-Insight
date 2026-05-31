@@ -1,0 +1,29 @@
+{
+  "total_steps_reviewed": 4,
+  "resolved_steps": 2,
+  "unresolved_steps": 2,
+  "escalation_triggers": 2,
+  "overall_success_rate": 0.5,
+  "runbook_summaries": [
+    {
+      "runbook": "checkout-api-latency",
+      "steps_observed": 3,
+      "resolved_steps": 2,
+      "success_rate": 0.67,
+      "unresolved_steps": [
+        "identify rollback criteria"
+      ],
+      "recommended_update": "add clearer rollback/dependency-owner guidance"
+    },
+    {
+      "runbook": "payment-dependency-timeout",
+      "steps_observed": 1,
+      "resolved_steps": 0,
+      "success_rate": 0.0,
+      "unresolved_steps": [
+        "confirm dependency owner"
+      ],
+      "recommended_update": "add clearer rollback/dependency-owner guidance"
+    }
+  ]
+}

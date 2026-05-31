@@ -1,0 +1,32 @@
+{
+  "total_action_items": 4,
+  "open_items": 3,
+  "in_progress_items": 1,
+  "high_priority_items": 2,
+  "items": [
+    {
+      "owner": "platform_runtime_team",
+      "action": "add dependency timeout regression coverage",
+      "status": "open",
+      "priority": "high"
+    },
+    {
+      "owner": "sre_oncall",
+      "action": "tighten retry-budget alerting",
+      "status": "open",
+      "priority": "high"
+    },
+    {
+      "owner": "service_owner",
+      "action": "document rollback criteria",
+      "status": "in_progress",
+      "priority": "medium"
+    },
+    {
+      "owner": "release_engineering",
+      "action": "add deployment correlation review",
+      "status": "open",
+      "priority": "medium"
+    }
+  ]
+}

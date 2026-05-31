@@ -1,0 +1,30 @@
+[
+  {
+    "alert_id": "ALERT-001",
+    "service": "checkout-api",
+    "alert_type": "latency_spike",
+    "severity": "sev1",
+    "signal": "p95 latency increased by 212%"
+  },
+  {
+    "alert_id": "ALERT-002",
+    "service": "checkout-api",
+    "alert_type": "retry_storm",
+    "severity": "sev1",
+    "signal": "retry budget exceeded"
+  },
+  {
+    "alert_id": "ALERT-003",
+    "service": "payment-api",
+    "alert_type": "dependency_failure",
+    "severity": "sev2",
+    "signal": "payment dependency timeout cluster"
+  },
+  {
+    "alert_id": "ALERT-004",
+    "service": "checkout-api",
+    "alert_type": "escalation_burst",
+    "severity": "sev1",
+    "signal": "multiple escalations in rolling window"
+  }
+]
