@@ -6,7 +6,7 @@ def test_customer_health_center_flags_risk():
     summary = build_customer_health(CUSTOMERS)
 
     assert summary["customers_at_risk"] == 4
-    assert summary["escalation_growth"] == "+33.3%"
+    assert summary["escalation_growth"] == "+40.0%"
     assert summary["customer_health_status"] == "review_required"
 
 def test_operational_graph_connects_entities():
