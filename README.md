@@ -598,3 +598,29 @@ Artifacts:
 - `slo_risk_dashboard/slo_dashboard_report.md`
 
 These workflows convert customer issue reports and operational incident data into support-ready severity, evidence, rollback recommendations, customer-safe summaries, SLA risk, SLO pressure, and escalation-aging metrics.
+
+
+## Build Analytics Hub
+
+AutoOps includes build/release analytics signals for developer productivity and release-readiness workflows.
+
+| Signal | Example Output |
+|---|---|
+| Failed builds | 7 failed builds reviewed |
+| Flaky tests | 3 flaky tests detected |
+| Regression detected | true |
+| Root cause | cache invalidation / dependency timeout / release regression |
+| CI health summary | release requires review before promotion |
+
+### Example Build Health Output
+
+{
+  "failed_builds": 7,
+  "flaky_tests": 3,
+  "regression_detected": true,
+  "root_cause": "cache invalidation",
+  "ci_health": "review_required",
+  "recommended_action": "block release until regression owner review"
+}
+
+This section strengthens AutoOps for Build Engineering, Release Engineering, Developer Productivity, CI/CD reliability, and platform operations roles.
