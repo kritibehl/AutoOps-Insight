@@ -1,0 +1,51 @@
+{
+  "nodes": [
+    {
+      "id": "INC-204",
+      "type": "incident",
+      "label": "latency spike after release"
+    },
+    {
+      "id": "checkout-api",
+      "type": "service",
+      "label": "checkout-api"
+    },
+    {
+      "id": "release-204",
+      "type": "release",
+      "label": "release-204"
+    },
+    {
+      "id": "enterprise_alpha",
+      "type": "customer",
+      "label": "enterprise_alpha"
+    },
+    {
+      "id": "payment-api",
+      "type": "dependency",
+      "label": "payment-api"
+    }
+  ],
+  "edges": [
+    {
+      "from": "INC-204",
+      "to": "checkout-api",
+      "relationship": "affected_service"
+    },
+    {
+      "from": "INC-204",
+      "to": "release-204",
+      "relationship": "correlated_release"
+    },
+    {
+      "from": "INC-204",
+      "to": "enterprise_alpha",
+      "relationship": "customer_impact"
+    },
+    {
+      "from": "checkout-api",
+      "to": "payment-api",
+      "relationship": "upstream_dependency"
+    }
+  ]
+}

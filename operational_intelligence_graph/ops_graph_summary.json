@@ -1,0 +1,18 @@
+{
+  "node_count": 5,
+  "edge_count": 4,
+  "node_types": {
+    "incident": 1,
+    "service": 1,
+    "release": 1,
+    "customer": 1,
+    "dependency": 1
+  },
+  "relationships": [
+    "affected_service",
+    "correlated_release",
+    "customer_impact",
+    "upstream_dependency"
+  ],
+  "graph_status": "ready_for_incident_review"
+}

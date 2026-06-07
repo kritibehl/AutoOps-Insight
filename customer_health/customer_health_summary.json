@@ -1,0 +1,14 @@
+{
+  "customers_at_risk": 4,
+  "escalation_growth": "+40.0%",
+  "open_incidents": 10,
+  "sla_breaches": 3,
+  "top_risk_customers": [
+    "enterprise_alpha",
+    "enterprise_beta",
+    "enterprise_gamma",
+    "enterprise_delta"
+  ],
+  "recommended_action": "prioritize enterprise accounts with SLA breaches and growing escalations",
+  "customer_health_status": "review_required"
+}
