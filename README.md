@@ -581,3 +581,20 @@ Artifacts:
 - `incident_trends/incident_trend_report.md`
 
 This workflow identifies top recurring incident families, month-over-month growth rates, trend status, and recommended remediation actions for support/SRE operations.
+
+
+## Customer Incident Workspace and SLA/SLO Risk Dashboard
+
+AutoOps includes customer-facing incident workspace artifacts and SLA/SLO risk dashboard workflows.
+
+Artifacts:
+- `customer_incident_workspace/sample_customer_incident.json`
+- `customer_incident_workspace/analyze_customer_incident.py`
+- `customer_incident_workspace/customer_incident_summary.json`
+- `customer_incident_workspace/customer_incident_report.md`
+- `slo_risk_dashboard/build_slo_dashboard.py`
+- `slo_risk_dashboard/slo_risk_summary.json`
+- `slo_risk_dashboard/escalation_ageing_report.json`
+- `slo_risk_dashboard/slo_dashboard_report.md`
+
+These workflows convert customer issue reports and operational incident data into support-ready severity, evidence, rollback recommendations, customer-safe summaries, SLA risk, SLO pressure, and escalation-aging metrics.

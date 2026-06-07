@@ -1,0 +1,13 @@
+{
+  "customer": "enterprise_account",
+  "issue": "latency spike after release",
+  "service": "checkout-api",
+  "release_id": "release-204",
+  "signals": {
+    "p95_latency_delta_pct": 240,
+    "error_rate_delta_pct": 3.2,
+    "release_id_matched": true,
+    "retry_spike": true
+  },
+  "customer_impact": "checkout requests delayed for enterprise traffic"
+}

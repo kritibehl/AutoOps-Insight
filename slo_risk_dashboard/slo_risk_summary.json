@@ -1,0 +1,18 @@
+{
+  "open_incidents": 3,
+  "sla_breaches": 2,
+  "p95_latency_ms": 4200,
+  "repeated_issue_family": "retry_storm",
+  "customer_impact": "high",
+  "max_escalation_age_hours": 18,
+  "risk_level": "high",
+  "recommended_action": "prioritize breached SLA incidents and retry_storm remediation",
+  "dashboard_tiles": [
+    "open_incidents",
+    "sla_breaches",
+    "p95_latency",
+    "repeated_issue_family",
+    "customer_impact",
+    "escalation_aging"
+  ]
+}

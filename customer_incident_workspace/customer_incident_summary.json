@@ -1,0 +1,21 @@
+{
+  "customer": "enterprise_account",
+  "service": "checkout-api",
+  "issue": "latency spike after release",
+  "severity": "sev2",
+  "suspected_cause": "deployment_regression",
+  "evidence": [
+    "p95 +240%",
+    "error_rate +3.2%",
+    "release_id matched",
+    "retry spike detected"
+  ],
+  "recommended_action": "rollback_candidate",
+  "customer_safe_summary": "checkout-api is showing elevated latency after release-204. The incident is under engineering review and rollback readiness is being evaluated.",
+  "engineering_follow_up": [
+    "compare release-204 diff against latency spike window",
+    "review retry budget and dependency saturation",
+    "prepare rollback review if customer impact persists"
+  ],
+  "workspace_status": "ready_for_support_review"
+}
