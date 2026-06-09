@@ -1,0 +1,9 @@
+{
+  "project": "AutoOps-Insight",
+  "customers_at_risk": 12,
+  "escalation_growth_pct": 40,
+  "executive_review": "REQUIRED",
+  "top_failure_class": "DependencyError",
+  "build_health": "Degraded",
+  "recommended_action": "Pin dependency versions and check upstream registry"
+}
