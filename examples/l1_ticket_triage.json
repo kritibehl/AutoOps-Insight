@@ -1,0 +1,19 @@
+{
+  "ticket_id": "TCK-1842",
+  "source": "support_queue",
+  "customer": "enterprise_account",
+  "reported_issue": "latency spike after release",
+  "service": "checkout-api",
+  "issue_family": "retry_storm",
+  "severity": "sev2",
+  "operational_risk": "high",
+  "customer_impact": "checkout requests delayed for enterprise traffic",
+  "evidence": [
+    "p95 latency +240%",
+    "error rate +3.2%",
+    "release_id release-204 matched",
+    "retry spike detected"
+  ],
+  "recommended_action": "escalate_to_sre",
+  "review_required": true
+}

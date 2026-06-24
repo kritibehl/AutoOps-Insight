@@ -172,3 +172,17 @@ pytest tests/ -q
   "top_failure_class": "DependencyError"
 }
 ```
+
+
+## Support Automation Workflows
+
+AutoOps includes support automation artifacts for L1/L2-style ticket review, escalation decisions, recurring issue feedback loops, and engineering-facing reports.
+
+Artifacts:
+- `examples/l1_ticket_triage.json`
+- `examples/escalation_decision.json`
+- `reports/support_queue_summary.md`
+- `reports/recurring_issue_feedback_loop.md`
+- `docs/support_automation_playbook.md`
+
+These artifacts show how AutoOps classifies recurring issue families, summarizes operational risk, recommends escalation paths, surfaces review-required states, tracks noisy services, and generates feedback loops for recurring failure signatures.

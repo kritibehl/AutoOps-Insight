@@ -1,0 +1,17 @@
+{
+  "ticket_id": "TCK-1842",
+  "old_queue": "support_l1",
+  "new_queue": "sre_oncall",
+  "escalation_reason": "customer-impacting latency regression after release",
+  "issue_family": "retry_storm",
+  "release_risk": "rollback_candidate",
+  "root_cause_hypothesis": "deployment_regression",
+  "owner": "checkout_platform_team",
+  "status": "escalated",
+  "next_actions": [
+    "review release-204 diff",
+    "inspect retry budget and dependency saturation",
+    "prepare rollback review",
+    "send customer-safe incident summary"
+  ]
+}

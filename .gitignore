@@ -9,3 +9,9 @@ autoops-ui/node_modules/
 autoops-ui/dist/
 reports/generated/
 autoops-ui/.env
+
+# Local runtime artifacts
+support_incidents.db
+artifacts/audit/
+ai_safety_incidents/responsible_ai_incident_summary.json
+dashboard/
