@@ -186,3 +186,16 @@ Artifacts:
 - `docs/support_automation_playbook.md`
 
 These artifacts show how AutoOps classifies recurring issue families, summarizes operational risk, recommends escalation paths, surfaces review-required states, tracks noisy services, and generates feedback loops for recurring failure signatures.
+
+
+## Network Incident Triage and Remediation Layer
+
+AutoOps includes operator-facing network incident triage artifacts that consume KubePulse-style diagnostics and Faultline-style network fault evidence.
+
+Artifacts:
+- `examples/network_incident_triage.json`
+- `reports/network_incident_summary.md`
+- `reports/reachability_remediation_report.md`
+- `docs/npe_incident_response_playbook.md`
+
+These reports classify network-style incidents, summarize reachability failures, identify likely root causes, recommend remediation steps, and route incidents through support, SRE, NPE, and service-owner escalation paths.

@@ -1,0 +1,30 @@
+{
+  "incident_id": "NET-204",
+  "source_projects": ["KubePulse", "Faultline"],
+  "incident_type": "network_reachability_failure",
+  "affected_service": "checkout-api",
+  "severity": "sev2",
+  "root_cause": "dependency reachability degradation after release",
+  "evidence": [
+    "tcp reachability failure to payment-api:443",
+    "p95 latency increased by 240%",
+    "retry storm detected",
+    "release_id release-204 correlated with incident window",
+    "Faultline profile matched high_latency + partial_partition pattern"
+  ],
+  "recommended_remediation": [
+    "verify service DNS resolution and endpoint routing",
+    "check payment-api dependency health",
+    "review release-204 network/config changes",
+    "prepare rollback if reachability failures persist",
+    "increase observability around dependency timeout budget"
+  ],
+  "owner": "checkout_platform_team",
+  "escalation_path": [
+    "support_l1",
+    "sre_oncall",
+    "network_production_engineering",
+    "checkout_platform_team"
+  ],
+  "status": "review_required"
+}
