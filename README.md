@@ -199,3 +199,18 @@ Artifacts:
 - `docs/npe_incident_response_playbook.md`
 
 These reports classify network-style incidents, summarize reachability failures, identify likely root causes, recommend remediation steps, and route incidents through support, SRE, NPE, and service-owner escalation paths.
+
+
+## Operator-Ready Network Incident Triage
+
+AutoOps mirrors KubePulse-style network incidents and converts raw reachability evidence into operator-ready remediation reports.
+
+Artifacts:
+- `examples/network_incident_triage.json`
+- `reports/network_incident_triage_report.md`
+- `docs/network_incident_triage.md`
+
+The report includes incident ID, affected service, severity, symptoms, evidence, likely root cause, blast radius, recommended remediation, rollback/recovery decision, human approval requirement, and escalation path.
+
+Safe automation framing:
+KubePulse gives raw network evidence, and AutoOps turns it into an operator-ready incident summary with root cause, blast radius, remediation, and escalation guidance.
