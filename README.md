@@ -214,3 +214,15 @@ The report includes incident ID, affected service, severity, symptoms, evidence,
 
 Safe automation framing:
 KubePulse gives raw network evidence, and AutoOps turns it into an operator-ready incident summary with root cause, blast radius, remediation, and escalation guidance.
+
+
+## Partner Support Triage
+
+AutoOps includes partner-support triage artifacts for external integration issues across playback, API, authentication, dashboard, and data-quality workflows.
+
+Artifacts:
+- `examples/external_partner_api_issue.json`
+- `reports/partner_issue_triage_report.md`
+- `docs/partner_support_triage.md`
+
+These workflows classify partner issue type, estimate severity and confidence, identify affected services, collect HTTP/log/API/SQL/release evidence, recommend partner-fix/internal-escalation/rollback/monitor actions, and generate support-ready troubleshooting summaries.

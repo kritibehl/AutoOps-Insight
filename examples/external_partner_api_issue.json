@@ -1,0 +1,27 @@
+{
+  "partner_id": "external_integration_partner",
+  "issue_type": "API",
+  "reported_symptom": "partner dashboard fails to load playback analytics after API release",
+  "affected_service": "partner-reporting-api",
+  "http_status": 403,
+  "api_response": {
+    "error": "forbidden",
+    "message": "invalid partner token scope"
+  },
+  "logs": [
+    "auth scope validation failed for partner_id=external_integration_partner",
+    "dashboard analytics request rejected at partner-reporting-api"
+  ],
+  "sql_signal": "partner analytics export rows dropped by 42% after release-204",
+  "recent_release": "release-204",
+  "confidence": 0.82,
+  "severity": "high",
+  "recommended_action": "internal_escalation",
+  "evidence": [
+    "HTTP 403 from partner-reporting-api",
+    "auth scope validation failure in logs",
+    "API response indicates invalid partner token scope",
+    "SQL signal shows 42% analytics export drop",
+    "recent release release-204 correlated with issue window"
+  ]
+}
