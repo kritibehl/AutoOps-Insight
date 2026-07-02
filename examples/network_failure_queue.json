@@ -1,0 +1,26 @@
+[
+  {
+    "incident_id": "NET-301",
+    "failure_family": "dns_resolution_failure",
+    "affected_service": "checkout-api",
+    "symptom": "service cannot resolve payment-api.internal",
+    "slo_impact": "medium",
+    "customer_impact": "checkout requests delayed"
+  },
+  {
+    "incident_id": "NET-302",
+    "failure_family": "tcp_timeout",
+    "affected_service": "partner-reporting-api",
+    "symptom": "TCP connection to analytics-db:5432 timed out",
+    "slo_impact": "high",
+    "customer_impact": "partner dashboard unavailable"
+  },
+  {
+    "incident_id": "NET-303",
+    "failure_family": "tls_handshake_failure",
+    "affected_service": "agentgrid",
+    "symptom": "TLS handshake failed against tool endpoint",
+    "slo_impact": "medium",
+    "customer_impact": "support workflow degraded"
+  }
+]

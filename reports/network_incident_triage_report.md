@@ -1,71 +1,28 @@
 # Network Incident Triage Report
 
-## Incident ID
+## Summary
 
-`NET-204`
+- Network incidents reviewed: 3
+- Triage status: PASS
 
-## Affected Service
+## Triage table
 
-`checkout-api`
+| Incident | Failure family | Severity | Affected service | SLO impact |
+|---|---|---|---|---|
+| NET-301 | dns_resolution_failure | sev2 | checkout-api | medium |
+| NET-302 | tcp_timeout | sev1 | partner-reporting-api | high |
+| NET-303 | tls_handshake_failure | sev2 | agentgrid | medium |
 
-## Severity
+## Supported failure families
 
-`sev2`
+- connection_refused
+- dns_resolution_failure
+- http_5xx_spike
+- packet_loss
+- routing_or_reachability_issue
+- tcp_timeout
+- tls_handshake_failure
 
-## Symptoms
+## Operational value
 
-- checkout latency spike after release
-- retry storm detected
-- payment dependency timeout errors
-- customer-facing requests delayed
-
-## Evidence
-
-- TCP reachability failure to `payment-api:443`
-- p95 latency increased by 240%
-- error rate increased by 3.2%
-- `release-204` matched the incident window
-- dependency reachability degraded after rollout
-
-## Likely Root Cause
-
-Dependency reachability degradation after release.
-
-## Blast Radius
-
-| Field | Value |
-|---|---|
-| Customers impacted | enterprise traffic |
-| Services impacted | checkout-api, payment-api |
-| Risk level | medium_high |
-
-## Recommended Remediation
-
-1. Verify DNS resolution for `payment-api`.
-2. Test TCP reachability to `payment-api:443`.
-3. Review `release-204` network and routing changes.
-4. Inspect retry budget and dependency timeout configuration.
-5. Prepare rollback if reachability failures persist.
-
-## Rollback or Recovery Decision
-
-`rollback_candidate`
-
-## Human Approval Required
-
-`true`
-
-## Owner / Escalation Path
-
-1. support_l1
-2. sre_oncall
-3. network_production_engineering
-4. checkout_platform_team
-
-## Operator Summary
-
-KubePulse gives raw network evidence, and AutoOps turns it into an operator-ready incident summary with root cause, blast radius, remediation, rollback guidance, and escalation path.
-
-## Safe Automation Note
-
-AutoOps recommends remediation and rollback readiness, but human approval is required before rollback or production-impacting recovery actions.
+This report classifies network-style incidents, estimates severity from SLO impact, recommends first diagnostic commands, and routes incidents through support/SRE/NPE escalation paths.

@@ -1,0 +1,71 @@
+{
+  "network_incidents_reviewed": 3,
+  "triaged_incidents": [
+    {
+      "incident_id": "NET-301",
+      "failure_family": "dns_resolution_failure",
+      "severity": "sev2",
+      "affected_service": "checkout-api",
+      "symptom": "service cannot resolve payment-api.internal",
+      "recommended_first_commands": [
+        "dig <host>",
+        "nslookup <host>",
+        "cat /etc/resolv.conf"
+      ],
+      "escalation_path": [
+        "support_l1",
+        "sre_oncall",
+        "platform_networking"
+      ],
+      "slo_impact": "medium",
+      "customer_impact": "checkout requests delayed"
+    },
+    {
+      "incident_id": "NET-302",
+      "failure_family": "tcp_timeout",
+      "severity": "sev1",
+      "affected_service": "partner-reporting-api",
+      "symptom": "TCP connection to analytics-db:5432 timed out",
+      "recommended_first_commands": [
+        "nc -vz <host> <port>",
+        "curl -v <url>",
+        "traceroute <host>"
+      ],
+      "escalation_path": [
+        "support_l1",
+        "sre_oncall",
+        "network_production_engineering"
+      ],
+      "slo_impact": "high",
+      "customer_impact": "partner dashboard unavailable"
+    },
+    {
+      "incident_id": "NET-303",
+      "failure_family": "tls_handshake_failure",
+      "severity": "sev2",
+      "affected_service": "agentgrid",
+      "symptom": "TLS handshake failed against tool endpoint",
+      "recommended_first_commands": [
+        "curl -v https://<host>",
+        "openssl s_client -connect <host>:443"
+      ],
+      "escalation_path": [
+        "support_l1",
+        "security_platform",
+        "service_owner"
+      ],
+      "slo_impact": "medium",
+      "customer_impact": "support workflow degraded"
+    }
+  ],
+  "supported_failure_families": [
+    "connection_refused",
+    "dns_resolution_failure",
+    "http_5xx_spike",
+    "packet_loss",
+    "routing_or_reachability_issue",
+    "tcp_timeout",
+    "tls_handshake_failure"
+  ],
+  "triage_status": "PASS"
+}
