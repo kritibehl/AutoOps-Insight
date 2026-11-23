@@ -47,7 +47,7 @@
 | Escalation Growth | **+40%** |
 | Executive Review | **Required** |
 
-*Generated from the latest report artifact in `reports/latest/`.*
+*Demo data: computed from the sample logs bundled in this repo (`sample*.log`), not from real customers. Source: `reports/latest/`.*
 
 ---
 
